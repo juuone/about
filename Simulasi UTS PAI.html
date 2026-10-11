@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulasi UTS PAI</title>
+<style>
+:root{
+  box-sizing:border-box;
+  --bg:#f2f2f7; --card:#ffffff; --text:#1c1c1e; --text2:#6c6c70; --sep:rgba(60,60,67,.18);
+  --blue:#007aff; --blue-soft:rgba(0,122,255,.12); --green:#34c759; --green-soft:rgba(52,199,89,.14);
+  --red:#ff3b30; --red-soft:rgba(255,59,48,.12); --orange:#ff9500; --fill:rgba(120,120,128,.12);
+  --blur:rgba(242,242,247,.8);
+  padding-top:env(safe-area-inset-top,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#000; --card:#1c1c1e; --text:#fff; --text2:#98989f; --sep:rgba(84,84,88,.6);
+    --blue:#0a84ff; --blue-soft:rgba(10,132,255,.2); --green:#30d158; --green-soft:rgba(48,209,88,.18);
+    --red:#ff453a; --red-soft:rgba(255,69,58,.18); --orange:#ff9f0a; --fill:rgba(120,120,128,.24);
+    --blur:rgba(0,0,0,.75);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000; --card:#1c1c1e; --text:#fff; --text2:#98989f; --sep:rgba(84,84,88,.6);
+  --blue:#0a84ff; --blue-soft:rgba(10,132,255,.2); --green:#30d158; --green-soft:rgba(48,209,88,.18);
+  --red:#ff453a; --red-soft:rgba(255,69,58,.18); --orange:#ff9f0a; --fill:rgba(120,120,128,.24);
+  --blur:rgba(0,0,0,.75);
+}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.4;font-size:17px}
+button,input{font:inherit;color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px 120px}
+.hidden{display:none!important}
+
+/* Welcome */
+.hero{padding:56px 4px 8px;text-align:left}
+.icon{width:84px;height:84px;border-radius:20px;background:linear-gradient(145deg,#0a84ff,#5e5ce6);display:grid;place-items:center;
+  box-shadow:0 10px 30px rgba(10,132,255,.35);margin-bottom:22px}
+.icon svg{width:46px;height:46px}
+h1{font-size:34px;line-height:1.1;letter-spacing:-.6px;margin:0 0 8px;font-weight:700}
+.sub{color:var(--text2);font-size:17px;margin:0 0 26px}
+.group{background:var(--card);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:13px 16px;min-height:48px}
+.row+.row{border-top:.5px solid var(--sep)}
+.row .k{color:var(--text2);flex:0 0 auto}
+.row .v{margin-left:auto;font-weight:500}
+.field{width:100%;border:0;background:transparent;outline:none;font-size:17px;padding:0}
+.field::placeholder{color:var(--text2)}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--blue);color:#fff;font-weight:600;font-size:17px;
+  padding:15px;text-align:center;cursor:pointer;transition:transform .12s,opacity .12s}
+.btn:active{transform:scale(.98);opacity:.85}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.btn.ghost{background:var(--fill);color:var(--blue)}
+.btn.small{padding:11px;font-size:15px;border-radius:12px}
+.hint{color:var(--text2);font-size:13px;margin:10px 16px 0}
+
+/* Top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:0 -16px;padding:10px 16px 12px;
+  background:var(--blur);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:.5px solid var(--sep)}
+.bar-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bar .t{font-weight:600;font-size:17px}
+.bar .m{color:var(--text2);font-size:13px}
+.link{border:0;background:none;color:var(--blue);font-size:17px;cursor:pointer;padding:4px 0}
+.prog{height:4px;border-radius:2px;background:var(--fill);margin-top:10px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--blue);border-radius:2px;transition:width .3s ease}
+
+/* Question */
+.chip{display:inline-block;background:var(--blue-soft);color:var(--blue);font-weight:600;font-size:13px;padding:4px 10px;border-radius:99px;margin:22px 0 12px}
+.q{font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-.3px;margin:0 0 20px}
+.star{font-size:13px;color:var(--orange);margin:-8px 0 16px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:2px solid transparent;
+  border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s}
+.opt:active{transform:scale(.99)}
+.opt .l{flex:0 0 30px;height:30px;border-radius:50%;background:var(--fill);display:grid;place-items:center;font-weight:600;font-size:15px;color:var(--text2)}
+.opt .x{padding-top:3px}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
+.opt.sel .l{background:var(--blue);color:#fff}
+
+/* Bottom nav */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:var(--blur);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--sep)}
+.dock-in{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.dock .btn{flex:1}
+.dock .btn.ghost{flex:0 0 38%}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{width:100%;max-width:560px;background:var(--bg);border-radius:20px 20px 0 0;padding:10px 16px calc(20px + env(safe-area-inset-bottom,0px));
+  max-height:80%;overflow:auto;animation:up .28s cubic-bezier(.2,.9,.3,1)}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--sep);margin:0 auto 14px}
+.sheet h3{margin:0 0 4px;font-size:20px}
+.sheet p{margin:0 0 14px;color:var(--text2);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px}
+.g{aspect-ratio:1;border:0;border-radius:12px;background:var(--card);font-weight:600;cursor:pointer}
+.g.done{background:var(--blue-soft);color:var(--blue)}
+.g.cur{outline:2px solid var(--blue)}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+
+/* Result */
+.score-card{text-align:center;padding:40px 16px 28px}
+.ring{width:176px;height:176px;margin:0 auto 18px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;font-size:52px;font-weight:700;letter-spacing:-1px}
+.ring .n small{display:block;font-size:14px;font-weight:500;color:var(--text2);letter-spacing:0;margin-top:-4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{background:var(--card);border-radius:14px;padding:12px 6px;text-align:center}
+.stat b{display:block;font-size:24px}
+.stat span{font-size:13px;color:var(--text2)}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;margin:22px 0 14px}
+.seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:7px 4px;font-size:14px;font-weight:500;cursor:pointer}
+.seg button.on{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.15);font-weight:600}
+.share-box{background:var(--card);border-radius:16px;padding:14px;margin-top:6px}
+.share-box img{width:100%;border-radius:12px;display:block;margin-bottom:12px}
+.share-box .note{font-size:13px;color:var(--text2);text-align:center;margin:10px 0 0}
+
+.rv{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px}
+.rv .top{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.badge{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px}
+.badge.ok{background:var(--green-soft);color:var(--green)}
+.badge.no{background:var(--red-soft);color:var(--red)}
+.badge.skip{background:var(--fill);color:var(--text2)}
+.rv .qt{font-weight:600;margin:0 0 12px;font-size:16px}
+.ro{display:flex;gap:10px;padding:9px 10px;border-radius:10px;font-size:15px;margin-bottom:6px;background:var(--fill)}
+.ro b{flex:0 0 20px}
+.ro.right{background:var(--green-soft)}
+.ro.wrong{background:var(--red-soft)}
+.ro .tag{margin-left:auto;font-size:12px;font-weight:600;white-space:nowrap;padding-left:8px}
+.ro.right .tag{color:var(--green)} .ro.wrong .tag{color:var(--red)}
+.why{margin-top:10px;padding:12px;border-radius:12px;background:var(--blue-soft);font-size:15px}
+.why strong{display:block;margin-bottom:2px;color:var(--blue)}
+.why.bad{background:var(--red-soft)} .why.bad strong{color:var(--red)}
+.why em{display:block;margin-top:6px;font-size:13px;color:var(--orange);font-style:normal}
+.key{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+.key .row{border-top:.5px solid var(--sep);padding:11px 16px}
+.empty{text-align:center;color:var(--text2);padding:40px 10px}
+.empty b{display:block;font-size:44px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+var QS = [
+/* PERTEMUAN 1 */
+{q:"Argumentasi keberadaan PAI yang menyatukan dimensi spiritual dengan rasionalitas ilmiah agar tidak ada dikotomi sains dan nilai ketuhanan adalah...",o:["Filosofis","Teologis","Sosiologis","Yuridis"],a:0,e:"Argumen filosofis mengintegrasikan spiritual dan rasionalitas ilmiah, sehingga mencegah dikotomi antara sains dan nilai ketuhanan. Teologis berbicara soal perintah agama, sosiologis soal kebutuhan masyarakat, yuridis soal dasar hukum."},
+{q:"Berikut yang BUKAN termasuk enam elemen kepribadian kaffah adalah...",o:["Islamic Knowledge","Islamic Politics","Islamic Skills","Islamic Competence"],a:1,e:"Enam elemen: Knowledge, Disposition, Skills, Commitment, Moslem Confidence, Competence. Islamic Politics tidak termasuk."},
+{q:"Hakikat PAI di PTU menurut PPT dosen adalah...",o:["Character building untuk mewujudkan Insan Kamil","Pelengkap beban SKS","Hafalan hukum ritual formal","Transfer of knowledge semata"],a:0,e:"PAI bukan sekadar transfer of knowledge, tetapi pembentukan karakter menuju Insan Kamil."},
+{q:"Paradigma integratif PAI di PTU berorientasi pada...",o:["Pemisahan ilmu agama dan umum","Penerimaan materi secara pasif","Pemecahan masalah (problem solving dan case study)","Hafalan teori dan hukum ritual"],a:2,e:"Paradigma dikotomis berfokus pada hafalan dan pemisahan ilmu; paradigma integratif berfokus pada pemecahan masalah."},
+{q:"Argumentasi teologis keberadaan PAI menyatakan bahwa...",o:["Mahasiswa harus toleran pada semua golongan","PAI wajib karena aturan kampus","Menuntut ilmu adalah perintah agama dan keilmuan menjadi wujud ibadah","Sains dan agama harus dipisah"],a:2,e:"Teologis: ilmu = ibadah dan pengabdian kepada Allah. Opsi 'aturan kampus' adalah argumen yuridis, bukan teologis."},
+/* PERTEMUAN 2 */
+{q:"Fungsi agama yang memberi thuma'ninah dan resiliensi psikologis saat menghadapi ujian hidup adalah fungsi...",o:["Pemersatu","Hidayah","Kontrol sosial","Ketenangan"],a:3,e:"Empat fungsi agama: hidayah, ketenangan, kontrol sosial, pemersatu. Thuma'ninah dan resiliensi psikologis termasuk fungsi ketenangan."},
+{q:"QS. Ar-Rum [30]: 30 dipakai dalam catatan untuk menjelaskan...",o:["Keagungan Al-Qur'an","Fitrah tauhid dan potensi ketuhanan","Peran masjid","Tujuan penciptaan jin dan manusia"],a:1,e:"Manusia sejak awal penciptaan membawa naluri mengakui Pencipta (fitrah tauhid). Tujuan penciptaan jin dan manusia adalah QS. Adz-Dzariyat: 56."},
+{q:"Rumus keberagamaan yang baik menurut catatan Pertemuan 2 adalah...",o:["Iman + Ilmu + Amal","Syariat + Politik + Ekonomi","Tauhid + Fikih + Tarikh","Iman (akidah) + Islam (syariat) + Ihsan (akhlak)"],a:3,e:"Keberagamaan yang baik = Iman (akidah) + Islam (syariat) + Ihsan (akhlak). Opsi 'Iman + Ilmu + Amal' mirip, tetapi bukan rumus dari catatan."},
+{q:"Furqan berarti...",o:["Penyejuk hati","Pemersatu umat","Hukuman bagi pendosa","Pembeda antara baik dan tidak baik"],a:3,e:"Agama berfungsi sebagai furqan, yaitu pembeda antara yang haq dan batil."},
+{q:"Aspek beragama yang berwujud empati tinggi, rendah hati (tawadhu), dan terhindar dari kesombongan adalah...",o:["Akidah dan syariat sekaligus","Ihsan (ranah afektif)","Syariat (ranah praktikal)","Akidah (ranah kognitif)"],a:1,e:"Ihsan = ranah afektif (empati, tawadhu, akhlak). Akidah = kognitif; syariat = praktikal; akhlak = kesalehan sosial."},
+{q:"\"Log in dan log out\" dalam beragama menggambarkan...",o:["Beragama aktif hanya saat ritual, lalu meninggalkan nilai agama di urusan lain","Menjalankan ibadah secara konsisten","Pindah dari satu agama ke agama lain","Beribadah sambil bermedia sosial"],a:0,e:"Beragama yang baik konsisten di semua ruang kehidupan, bukan hanya aktif saat ritual lalu 'log out' di urusan lain.",s:1},
+/* PERTEMUAN 3 */
+{q:"Dalam hadis Jibril (HR. Muslim), ihsan dijelaskan sebagai...",o:["Menunaikan zakat dan berhaji","Beribadah seakan-akan melihat Allah; jika tidak mampu, yakin Allah melihat kita","Beriman kepada enam rukun iman","Bersyahadat dan mendirikan salat"],a:1,e:"Itulah definisi ihsan dalam hadis Jibril. Zakat/haji/syahadat/salat adalah rukun Islam, sedangkan enam rukun iman adalah penjelasan iman."},
+{q:"Dalam perumpamaan pohon, ihsan diibaratkan sebagai...",o:["Daun","Buah","Akar","Batang"],a:1,e:"Iman = akar, Islam = batang/dahan, ihsan = buah."},
+{q:"Muraqabah sebagai benteng anti-korupsi berarti...",o:["Yakin adanya hari akhir saja","Taat pada regulasi tertulis saja","Takut dihukum aparat","Kesadaran bahwa Allah selalu mengawasi setiap perbuatan"],a:3,e:"Muraqabah melahirkan integritas saat sendiri maupun ramai, karena sadar Allah selalu mengawasi, bukan sekadar takut aparat atau aturan tertulis."},
+{q:"Hadis Jibril tentang Islam, iman, dan ihsan diriwayatkan oleh...",o:["Bukhari","Muslim","Tirmidzi","Abu Dawud"],a:1,e:"PPT dosen menyebut HR. Muslim."},
+{q:"Perspektif cinta mengubah hubungan hamba dengan Allah dari transaksional menjadi...",o:["Kewajiban tanpa makna","Relasional dan transformatif","Hukum semata","Formalitas ritual"],a:1,e:"Ketaatan mengalir sukarela karena mahabbah (cinta), sehingga hubungan menjadi relasional dan transformatif."},
+{q:"Contoh langkah nyata anti-korupsi bagi mahasiswa adalah...",o:["Menerima gratifikasi kecil","Mengikuti gaya hidup hedonis","Menolak plagiarisme, menyontek, dan perjokian tugas","Menggunakan dana organisasi tanpa laporan"],a:2,e:"Integritas akademik adalah langkah pertama anti-korupsi bagi mahasiswa. Opsi lainnya justru perilaku koruptif."},
+/* PERTEMUAN 4 */
+{q:"Tahap tasawuf berupa pembersihan jiwa dari sifat tercela dan penyakit hati disebut...",o:["Tajalli","Tazkiyah","Tahalli","Takhalli"],a:3,e:"Takhalli = membersihkan; tahalli = mengisi dengan sifat terpuji; tajalli = tersingkapnya cahaya ketuhanan."},
+{q:"Zuhud menurut catatan Pertemuan 4 adalah...",o:["Menjauhi masyarakat","Dunia berada di tangan, bukan di dalam hati","Meninggalkan dunia sepenuhnya","Hidup dalam kemiskinan"],a:1,e:"Zuhud = pengendalian diri; tidak diperbudak materi dan tren. Bukan menjauhi masyarakat, meninggalkan dunia, atau hidup miskin."},
+{q:"Penyakit hati yang membuat seseorang haus pengakuan manusia adalah...",o:["Hasad","Wara'","Hubbud dunya","Riya' dan ujub"],a:3,e:"Riya' (pamer) dan ujub (bangga diri) membuat orang haus pengakuan. Hasad = dengki; hubbud dunya = cinta dunia/materialistis; wara' bukan penyakit hati."},
+{q:"Tahap tahalli adalah...",o:["Mengasingkan diri dari masyarakat","Mencapai cahaya ketuhanan","Mengisi jiwa dengan sifat terpuji dan kebiasaan positif","Membersihkan jiwa dari sifat tercela"],a:2,e:"Urutannya takhalli, lalu tahalli, lalu tajalli. Tahalli adalah mengisi jiwa dengan sifat terpuji. 'Membersihkan' adalah takhalli; 'cahaya ketuhanan' adalah tajalli."},
+{q:"Wara' (kehati-hatian) berarti...",o:["Meninggalkan hal syubhat demi kebersihan jiwa","Berserah diri setelah berusaha","Menjauhi semua urusan dunia","Menahan diri saat musibah"],a:0,e:"Wara' = meninggalkan yang syubhat demi kebersihan jiwa. Dampak mentalnya: bebas dari rasa bersalah dan penyesalan batin. 'Berserah diri setelah berusaha' adalah tawakkal; 'menahan diri saat musibah' adalah sabar."},
+{q:"Minimalisme berbasis ... adalah mengonsumsi sesuai kebutuhan, bukan gengsi atau FOMO.",o:["Wara'","Muraqabah","Zuhud","Tawakkal"],a:2,e:"Digital detox lewat muraqabah; minimalisme lewat zuhud; self-healing lewat zikir."},
+/* PERTEMUAN 5 */
+{q:"Makna \"liyaddabbaru\" dalam QS. Sad [38]: 29 adalah...",o:["Menyalin mushaf","Perenungan makna ayat","Menghafal lafaz","Membaca dengan cepat"],a:1,e:"Liyaddabbaru berarti tadabbur: bukan sekadar membaca lafaz, tetapi mendalami dan merenungkan pesan ayat."},
+{q:"Pilar interaksi ideal dengan Al-Qur'an yang berfokus pada internalisasi dan perilaku nyata adalah...",o:["Tafakkur","'Amal dan akhlak","Qira'ah dan tilawah","Tadabbur"],a:1,e:"Tiga pilar: qira'ah-tilawah (membaca), tadabbur-tafakkur (merenungkan), 'amal-akhlak (mengamalkan dalam perilaku nyata)."},
+{q:"Sikap yang paling tepat dalam kasus tilawah massal di trotoar Malioboro adalah...",o:["Melarang semua kegiatan tilawah","Membaca sekeras mungkin agar didengar","Menjaga niat dan adab serta mengutamakan masjid sebagai pusat syi'ar","Tidak peduli pada ketertiban umum"],a:2,e:"Ada sisi syi'ar dan sisi adab; keduanya harus dijaga. Melarang total, mengeraskan suara, atau mengabaikan ketertiban umum sama-sama kurang tepat."},
+{q:"HR. Bukhari No. 5027 menyebut sebaik-baik manusia adalah yang...",o:["Membangun masjid paling megah","Mempelajari Al-Qur'an dan mengajarkannya","Membaca paling keras","Menghafal paling banyak"],a:1,e:"Hadis ini menunjukkan pembelajaran berkelanjutan dan tanggung jawab mengajar: yang terbaik adalah yang belajar Al-Qur'an dan mengajarkannya."},
+{q:"Syarat memakmurkan masjid menurut QS. At-Tawbah [9]: 18 adalah...",o:["Berilmu tinggi dan fasih","Kaya dan dermawan","Berasal dari keluarga ulama","Beriman, salat, zakat, dan tidak takut kecuali kepada Allah"],a:3,e:"Ada empat kriteria dalam ayat tersebut: beriman, mendirikan salat, menunaikan zakat, dan tidak takut kecuali kepada Allah. Ilmu, kekayaan, atau keturunan tidak disebut."},
+{q:"Masjid sebagai pusat sosial berperan dalam...",o:["Salat berjemaah dan zikir","Kajian keislaman dan literasi","Pengelolaan zakat, infak, dan bantuan kemanusiaan","Ukhuwah tanpa membedakan latar belakang"],a:2,e:"Empat dimensi masjid: ibadah (salat, zikir), edukasi (kajian, literasi), sosial (zakat, infak, bantuan kemanusiaan), dan persatuan (ukhuwah). Peran sosial = pengelolaan zakat, infak, dan bantuan."},
+/* PERTEMUAN 6 */
+{q:"Pendekatan studi Islam yang meneliti latar waktu, tempat, dan konteks politik-sosial turunnya ayat (asbabun nuzul) adalah...",o:["Sosiologis","Historis","Filosofis","Bayani"],a:1,e:"Pendekatan historis berfungsi memisahkan nilai universal yang abadi dari pranata lokal yang sementara."},
+{q:"Teori double movement dikemukakan oleh...",o:["Fazlur Rahman","Ibn Khaldun","Nasr Hamid Abu Zayd","Asy-Syafi'i"],a:0,e:"Double movement (Fazlur Rahman): dari situasi kini ke masa turunnya ayat, lalu kembali ke situasi modern."},
+{q:"Berikut yang BUKAN termasuk lima tujuan pokok maqasid asy-syari'ah adalah...",o:["Harta","Akal","Agama","Kekuasaan"],a:3,e:"Lima tujuan: agama, jiwa, akal, keturunan, harta. Kekuasaan tidak termasuk."},
+{q:"Ciri era pertengahan (13–18 M) dalam perkembangan studi Islam adalah...",o:["Integrasi hermeneutika dan ilmu sosial","Munculnya jaring laba-laba keilmuan","Dominasi kitab kuning, sistem syarah, dan melambatnya ijtihad mandiri","Kodifikasi hadis dan pembentukan mazhab"],a:2,e:"Era klasik = kodifikasi hadis dan pembentukan mazhab. Era pertengahan = dominasi kitab kuning, syarah, ijtihad melambat. Era kontemporer = pembaruan dan interdisipliner (hermeneutika, ilmu sosial)."},
+{q:"Ibn Khaldun dikenal sebagai pionir metode kritis-sosiologis lewat karyanya...",o:["Ar-Risalah","Ihya Ulumiddin","Al-Muqaddimah","Al-Mustasfa"],a:2,e:"Al-Muqaddimah karya Ibn Khaldun. Ar-Risalah karya Asy-Syafi'i; Al-Mustasfa karya Al-Ghazali; Ihya Ulumiddin juga karya Al-Ghazali."},
+{q:"Dalam triadik epistemologi keilmuan, unsur yang menekankan etika, kedalaman spiritual, dan kemanusiaan adalah...",o:["Rasional-burhani","Intuitif-irfani","Empiris-sosiologis","Tekstual-bayani"],a:1,e:"Bayani = nash/teks; burhani = akal dan sains; irfani = fikr/ruh (etika, spiritual, kemanusiaan)."},
+/* PERTEMUAN 7 */
+{q:"Moderasi beragama dalam Islam sepadan dengan konsep wasathiyah, yaitu...",o:["Mengurangi kadar keimanan","Mencampur semua ajaran agama","Menolak seluruh tradisi","Jalan tengah yang adil dan seimbang"],a:3,e:"Berdasar QS. Al-Baqarah [2]: 143 (ummatan wasathan). Moderasi bukan berarti mengurangi iman atau mencampur ajaran agama.",s:1},
+{q:"Saat menerima informasi keagamaan viral di media sosial, sikap yang dianjurkan adalah...",o:["Mengabaikan semua informasi keagamaan","Tabayyun (memeriksa kebenarannya)","Segera menyebarkannya","Mengikuti pendapat mayoritas"],a:1,e:"QS. Al-Hujurat [49]: 6 memerintahkan tabayyun, yaitu memeriksa kebenaran berita sebelum menerima atau menyebarkannya.",s:1},
+{q:"Berikut yang BUKAN termasuk empat indikator moderasi beragama adalah...",o:["Eksklusivisme kelompok","Anti-kekerasan","Komitmen kebangsaan","Toleransi"],a:0,e:"Empat indikator: komitmen kebangsaan, toleransi, anti-kekerasan, dan akomodatif terhadap budaya lokal. Eksklusivisme kelompok justru bertentangan dengan moderasi.",s:1},
+{q:"Dampak negatif teknologi informasi bagi perilaku keagamaan adalah...",o:["Akses luas ke kajian dan tafsir","Dakwah menjangkau lebih banyak orang","Kemudahan berzakat daring","Hoaks keagamaan, polarisasi, dan radikalisasi daring"],a:3,e:"Tiga opsi lain adalah dampak positif teknologi. Hoaks, polarisasi, dan radikalisasi daring adalah dampak negatifnya.",s:1}
+];
+var PERT = [[0,4],[5,10],[11,16],[17,22],[23,28],[29,34],[35,38]];
+function pert(i){for(var p=0;p<PERT.length;p++){if(i>=PERT[p][0]&&i<=PERT[p][1])return p+1}return 1}
+var L = ["A","B","C","D"];
+var N = QS.length;
+var st = {name:"",idx:0,ans:new Array(N).fill(null),tab:"salah",shareURL:"",screen:"welcome"};
+var app = document.getElementById("app");
+
+function h(s){return s}
+function setTitle(){document.title = "Simulasi UTS PAI"}
+
+/* ---------- WELCOME ---------- */
+function renderWelcome(){
+  st.screen="welcome";
+  app.innerHTML =
+  '<div class="hero">'+
+     '<h1>Simulasi UTS<br>Pendidikan Agama Islam</h1>'+
+   '<p class="sub">39 soal pilihan ganda.</p>'+
+  '</div>'+
+  '<div class="group"><label class="row"><span class="k">Nama</span><input class="field" id="nm" placeholder="Tulis nama kamu (Juan)" maxlength="40" autocomplete="name" enterkeyhint="go"></label></div>'+
+  '<p class="hint">Nama kamu akan muncul di kartu skor yang bisa dibagikan.</p>'+
+  '<div class="group" style="margin-top:22px">'+
+    '<div class="row"><span class="k">Jumlah soal</span><span class="v">39</span></div>'+
+    '<div class="row"><span class="k">Waktu</span><span class="v">Tanpa batas</span></div>'+
+    '<div class="row"><span class="k">Hasil</span><span class="v">Skor, kunci, pembahasan</span></div>'+
+  '</div>'+
+  '<div style="margin-top:26px"><button class="btn" id="go" disabled>Lanjut</button></div>';
+  var nm=document.getElementById("nm"), go=document.getElementById("go");
+  nm.value = st.name;
+  go.disabled = !nm.value.trim();
+  nm.addEventListener("input",function(){go.disabled=!nm.value.trim()});
+  nm.addEventListener("keydown",function(e){if(e.key==="Enter"&&nm.value.trim())start()});
+  go.addEventListener("click",start);
+  function start(){st.name=nm.value.trim();st.idx=0;st.ans=new Array(N).fill(null);renderQuiz();window.scrollTo(0,0)}
+}
+
+/* ---------- QUIZ ---------- */
+function answeredCount(){return st.ans.filter(function(x){return x!==null}).length}
+function renderQuiz(){
+  st.screen="quiz";
+  var q=QS[st.idx], last=st.idx===N-1;
+  var opts=q.o.map(function(t,i){
+    return '<button class="opt'+(st.ans[st.idx]===i?' sel':'')+'" data-i="'+i+'"><span class="l">'+L[i]+'</span><span class="x">'+t+'</span></button>';
+  }).join("");
+  app.innerHTML =
+  '<div class="bar">'+
+    '<div class="bar-top"><div><div class="t">Soal '+(st.idx+1)+' dari '+N+'</div><div class="m">'+answeredCount()+' terjawab</div></div>'+
+    '<button class="link" id="list">Daftar soal</button></div>'+
+    '<div class="prog"><i style="width:'+((st.idx+1)/N*100)+'%"></i></div>'+
+  '</div>'+
+  '<span class="chip">Pertemuan '+pert(st.idx)+'</span>'+
+  '<p class="q">'+q.q+'</p>'+
+  (q.s?'<p class="star">* Soal dari penjelasan umum, cocokkan dengan materi dosen.</p>':'')+
+  '<div id="opts">'+opts+'</div>'+
+  '<div class="dock"><div class="dock-in">'+
+    (st.idx>0?'<button class="btn ghost" id="prev">Sebelumnya</button>':'')+
+    '<button class="btn" id="next">'+(last?'Selesai':'Lanjut')+'</button>'+
+  '</div></div>';
+  document.querySelectorAll(".opt").forEach(function(b){
+    b.addEventListener("click",function(){
+      st.ans[st.idx]=+b.dataset.i;
+      document.querySelectorAll(".opt").forEach(function(x){x.classList.remove("sel")});
+      b.classList.add("sel");
+      document.querySelector(".bar .m").textContent=answeredCount()+" terjawab";
+    });
+  });
+  var pv=document.getElementById("prev"); if(pv)pv.addEventListener("click",function(){st.idx--;renderQuiz();window.scrollTo(0,0)});
+  document.getElementById("next").addEventListener("click",function(){
+    if(last){confirmFinish()}else{st.idx++;renderQuiz();window.scrollTo(0,0)}
+  });
+  document.getElementById("list").addEventListener("click",openList);
+}
+
+function sheet(html){
+  var s=document.createElement("div");s.className="scrim";
+  s.innerHTML='<div class="sheet"><div class="grab"></div>'+html+'</div>';
+  s.addEventListener("click",function(e){if(e.target===s)s.remove()});
+  document.body.appendChild(s);return s;
+}
+function openList(){
+  var cells=QS.map(function(_,i){
+    return '<button class="g'+(st.ans[i]!==null?' done':'')+(i===st.idx?' cur':'')+'" data-i="'+i+'">'+(i+1)+'</button>';
+  }).join("");
+  var s=sheet('<h3>Daftar soal</h3><p>Biru artinya sudah dijawab.</p><div class="grid">'+cells+'</div><button class="btn small ghost" id="fin">Selesaikan ujian</button>');
+  s.querySelectorAll(".g").forEach(function(b){b.addEventListener("click",function(){st.idx=+b.dataset.i;s.remove();renderQuiz();window.scrollTo(0,0)})});
+  s.querySelector("#fin").addEventListener("click",function(){s.remove();confirmFinish()});
+}
+function confirmFinish(){
+  var left=N-answeredCount();
+  var s=sheet('<h3>Selesaikan ujian?</h3><p>'+(left>0?'Masih ada '+left+' soal yang belum dijawab. Soal kosong dihitung salah.':'Semua soal sudah dijawab.')+'</p>'+
+    '<button class="btn" id="yes" style="margin-bottom:10px">Lihat hasil</button><button class="btn ghost" id="no">Kembali ke soal</button>');
+  s.querySelector("#no").addEventListener("click",function(){s.remove()});
+  s.querySelector("#yes").addEventListener("click",function(){s.remove();renderResult();window.scrollTo(0,0)});
+}
+
+/* ---------- RESULT ---------- */
+function calc(){
+  var c=0,w=0,k=0;
+  QS.forEach(function(q,i){if(st.ans[i]===null)k++;else if(st.ans[i]===q.a)c++;else w++});
+  return {c:c,w:w,k:k,score:Math.round(c/N*100)};
+}
+function grade(s){
+  if(s>=85)return "Luar biasa";
+  if(s>=70)return "Bagus";
+  if(s>=55)return "Cukup";
+  return "Perlu belajar lagi";
+}
+function renderResult(){
+  st.screen="result";
+  var r=calc(), C=2*Math.PI*78, off=C*(1-r.score/100);
+  var col=r.score>=70?"var(--green)":(r.score>=55?"var(--orange)":"var(--red)");
+  app.innerHTML =
+  '<div class="score-card">'+
+    '<div class="ring"><svg viewBox="0 0 176 176"><circle cx="88" cy="88" r="78" fill="none" stroke="var(--fill)" stroke-width="12"/>'+
+    '<circle cx="88" cy="88" r="78" fill="none" stroke="'+col+'" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"/></svg>'+
+    '<div class="n"><div>'+r.score+'<small>dari 100</small></div></div></div>'+
+    '<h1 style="font-size:28px">'+grade(r.score)+', '+esc(st.name)+'</h1>'+
+    '<p class="sub" style="margin:0">'+r.c+' dari '+N+' soal benar</p>'+
+  '</div>'+
+  '<div class="stats"><div class="stat"><b style="color:var(--green)">'+r.c+'</b><span>Benar</span></div>'+
+  '<div class="stat"><b style="color:var(--red)">'+r.w+'</b><span>Salah</span></div>'+
+  '<div class="stat"><b style="color:var(--text2)">'+r.k+'</b><span>Kosong</span></div></div>'+
+  '<div class="share-box"><img id="card" alt="Kartu skor"><button class="btn" id="share">Bagikan skor</button>'+
+  '<p class="note" id="snote">Atau tekan lama gambar, lalu pilih Simpan Gambar.</p></div>'+
+  '<div class="seg" id="seg"><button data-t="salah">Yang salah</button><button data-t="semua">Semua soal</button><button data-t="kunci">Kunci</button></div>'+
+  '<div id="rv"></div>'+
+  '<div style="margin-top:20px"><button class="btn ghost" id="again">Ulangi simulasi</button></div>';
+
+  drawCard(r);
+  document.getElementById("share").addEventListener("click",shareCard);
+  document.getElementById("again").addEventListener("click",function(){st.idx=0;st.ans=new Array(N).fill(null);renderQuiz();window.scrollTo(0,0)});
+  document.querySelectorAll("#seg button").forEach(function(b){
+    b.addEventListener("click",function(){st.tab=b.dataset.t;renderReview()});
+  });
+  st.tab = r.w+r.k>0 ? "salah" : "semua";
+  renderReview();
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+function renderReview(){
+  document.querySelectorAll("#seg button").forEach(function(b){b.classList.toggle("on",b.dataset.t===st.tab)});
+  var box=document.getElementById("rv"), out="";
+  if(st.tab==="kunci"){
+    out='<div class="group key">'+QS.map(function(q,i){
+      var ok=st.ans[i]===q.a;
+      return '<div class="row"><span class="k">'+(i+1)+'</span><span class="v">'+L[q.a]+' <span style="color:'+(st.ans[i]===null?'var(--text2)':ok?'var(--green)':'var(--red)')+'">'+(st.ans[i]===null?'–':ok?'✓':'✗ '+L[st.ans[i]])+'</span></span></div>';
+    }).join("")+'</div><p class="hint">Huruf besar = kunci. Tanda ✗ diikuti jawabanmu.</p>';
+  }else{
+    var items=[];
+    QS.forEach(function(q,i){
+      var ok=st.ans[i]===q.a;
+      if(st.tab==="salah"&&ok)return;
+      items.push(reviewItem(q,i));
+    });
+    out=items.length?items.join(""):'<div class="empty"><b>🎉</b>Tidak ada jawaban yang salah.</div>';
+  }
+  box.innerHTML=out;
+}
+function reviewItem(q,i){
+  var u=st.ans[i], ok=u===q.a, skip=u===null;
+  var opts=q.o.map(function(t,j){
+    var cls="",tag="";
+    if(j===q.a){cls="right";tag=ok?"Jawabanmu":"Kunci"}
+    else if(j===u){cls="wrong";tag="Jawabanmu"}
+    return '<div class="ro '+cls+'"><b>'+L[j]+'</b><span>'+t+'</span>'+(tag?'<span class="tag">'+tag+'</span>':'')+'</div>';
+  }).join("");
+  var why;
+  if(ok){why='<div class="why"><strong>Pembahasan</strong>'+q.e+'</div>'}
+  else{
+    why='<div class="why bad"><strong>'+(skip?'Soal ini belum kamu jawab':'Kenapa jawabanmu salah')+'</strong>'+
+      (skip?'':'Kamu memilih ('+L[u]+') '+q.o[u]+'. ')+'Jawaban yang tepat adalah ('+L[q.a]+') '+q.o[q.a]+'. '+q.e+'</div>';
+  }
+  if(q.s)why=why.replace(/<\/div>$/,'<em>* Soal dari penjelasan umum, cek ke materi dosen.</em></div>');
+  return '<div class="rv"><div class="top"><span class="badge '+(skip?'skip':ok?'ok':'no')+'">'+(skip?'Kosong':ok?'Benar':'Salah')+'</span>'+
+    '<span class="m" style="color:var(--text2);font-size:13px">Soal '+(i+1)+' · Pertemuan '+pert(i)+'</span></div>'+
+    '<p class="qt">'+q.q+'</p>'+opts+why+'</div>';
+}
+
+/* ---------- SHARE CARD (canvas) ---------- */
+function drawCard(r){
+  var W=1080,H=1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  var x=cv.getContext("2d"), F='-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif';
+  var g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#0a84ff");g.addColorStop(1,"#5e5ce6");
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  // soft circles
+  x.fillStyle="rgba(255,255,255,.08)";x.beginPath();x.arc(900,200,260,0,7);x.fill();
+  x.beginPath();x.arc(120,1200,300,0,7);x.fill();
+  // white card
+  rr(x,70,230,W-140,900,56);x.fillStyle="#fff";x.fill();
+  x.textAlign="center";
+  x.fillStyle="#fff";x.font="700 54px "+F;x.fillText("Simulasi UTS PAI",W/2,130);
+  x.font="500 32px "+F;x.fillStyle="rgba(255,255,255,.85)";x.fillText("Pendidikan Agama Islam · Pertemuan 1–7",W/2,182);
+  // name
+  var nm=st.name,fs=64;x.fillStyle="#1c1c1e";
+  do{x.font="700 "+fs+"px "+F;fs-=2}while(x.measureText(nm).width>W-260&&fs>26);
+  x.fillText(nm,W/2,360);
+  x.font="500 32px "+F;x.fillStyle="#6c6c70";x.fillText("mendapatkan skor",W/2,418);
+  // ring
+  var cx=W/2,cy=690,R=190,col=r.score>=70?"#34c759":(r.score>=55?"#ff9500":"#ff3b30");
+  x.lineWidth=34;x.lineCap="round";
+  x.strokeStyle="#ececf1";x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.stroke();
+  x.strokeStyle=col;x.beginPath();x.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+Math.PI*2*r.score/100);x.stroke();
+  x.fillStyle="#1c1c1e";x.font="800 170px "+F;x.fillText(String(r.score),cx,cy+44);
+  x.font="500 34px "+F;x.fillStyle="#6c6c70";x.fillText("dari 100",cx,cy+104);
+  // grade
+  x.font="700 56px "+F;x.fillStyle=col;x.fillText(grade(r.score),cx,1000);
+  x.font="500 36px "+F;x.fillStyle="#6c6c70";x.fillText(r.c+" benar · "+r.w+" salah · "+r.k+" kosong",cx,1060);
+  // footer
+  var d=new Date();var tgl=d.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  x.fillStyle="rgba(255,255,255,.9)";x.font="500 34px "+F;x.fillText(tgl,W/2,1230);
+  x.font="600 30px "+F;x.fillStyle="rgba(255,255,255,.7)";x.fillText("Ayo coba simulasinya juga",W/2,1282);
+  st.canvas=cv;
+  try{st.shareURL=cv.toDataURL("image/png")}catch(e){st.shareURL=""}
+  document.getElementById("card").src=st.shareURL;
+}
+function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+
+function shareCard(){
+  var note=document.getElementById("snote"), r=calc();
+  var text="Skor simulasi UTS PAI saya: "+r.score+"/100 ("+r.c+" dari "+N+" benar).";
+  if(!st.canvas){return}
+  st.canvas.toBlob(function(blob){
+    try{
+      var f=new File([blob],"skor-uts-pai.png",{type:"image/png"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){
+        navigator.share({files:[f],title:"Skor UTS PAI",text:text}).catch(function(){});
+        return;
+      }
+      if(navigator.share){navigator.share({title:"Skor UTS PAI",text:text}).catch(function(){});return}
+    }catch(e){}
+    note.textContent="Berbagi langsung tidak tersedia di sini. Tekan lama gambar di atas, lalu pilih Simpan Gambar.";
+    note.style.color="var(--orange)";
+  },"image/png");
+}
+
+renderWelcome();
+</script>
+</body>
+</html>
