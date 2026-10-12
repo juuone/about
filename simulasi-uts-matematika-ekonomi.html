@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Simulasi UTS Matematika Ekonomi dan Bisnis</title>
+<style>
+:root{
+  --bg:#f2f2f7;--card:#fff;--blue:#007aff;--blue-soft:rgba(0,122,255,.1);
+  --green:#34c759;--green-soft:rgba(52,199,89,.12);--green-d:#248a3d;
+  --red:#ff3b30;--red-soft:rgba(255,59,48,.1);--red-d:#d70015;
+  --orange:#ff9500;--label:#1c1c1e;--sec:#8e8e93;--sep:#e5e5ea;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--label);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+#app{max-width:400px;margin:0 auto;padding:14px 14px 24px;min-height:calc(100vh - 90px)}
+.foot{max-width:400px;margin:0 auto;padding:6px 14px calc(var(--dockh,0px) + 90px)}
+.foot-c{background:var(--card);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px}
+.foot-av{flex:none;width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#5ac8fa,#007aff);color:#fff;
+  font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center}
+.foot-t{flex:1;min-width:0;line-height:1.3}
+.foot-t b{display:block;font-size:14px;font-weight:600}
+.foot-t span{font-size:12px;color:var(--sec)}
+.foot-ig{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--blue-soft);color:var(--blue);text-decoration:none;
+  font-size:13px;font-weight:600;padding:7px 12px;border-radius:20px}
+.foot-ig:active{opacity:.6}
+
+/* dock iklan */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;max-width:440px;margin:0 auto;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:16px 16px 0 0;box-shadow:0 -1px 0 var(--sep),0 -6px 24px rgba(0,0,0,.06);
+  padding-bottom:env(safe-area-inset-bottom,0)}
+.dock-h{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:none;padding:8px 14px;font:inherit;cursor:pointer;color:var(--sec);font-size:12px}
+.dock-h .grip{position:absolute;left:50%;top:5px;width:36px;height:4px;margin-left:-18px;border-radius:4px;background:#d1d1d6}
+.dock-h{position:relative;padding-top:14px}
+.dock-h svg{transition:transform .25s;color:var(--sec)}
+.dock.closed .dock-h svg{transform:rotate(180deg)}
+.dock-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s ease}
+.dock.closed .dock-b{grid-template-rows:0fr}
+.dock-b>div{overflow:hidden;min-height:0}
+.dock-i{display:flex;justify-content:center;padding:2px 14px 10px}
+.dock-i iframe{border:0;display:block;transform-origin:top left;background:transparent}
+h1{font-size:24px;font-weight:700;letter-spacing:-.4px;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 8px}
+p{margin:0}
+.sub{color:var(--sec);font-size:13px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px}
+.group{background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:.5px solid var(--sep);font-size:14px}
+.row:last-child{border-bottom:0}
+.row b{font-weight:600}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:600;font-size:15px;
+  background:var(--blue);color:#fff;cursor:pointer;text-align:center;transition:opacity .15s,transform .1s}
+.btn:active{opacity:.7;transform:scale(.99)}
+.btn.sec{background:var(--blue-soft);color:var(--blue)}
+.btn.plain{background:transparent;color:var(--blue)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btns{display:flex;flex-direction:column;gap:8px}
+.btns.h{flex-direction:row}
+input[type=text]{width:100%;border:0;background:#f2f2f7;border-radius:10px;padding:12px;font:inherit;font-size:16px;outline:2px solid transparent;outline-offset:0}
+input[type=text]:focus{outline-color:var(--blue)}
+.center{text-align:center}
+.mt{margin-top:12px}.mt2{margin-top:20px}
+.hero{padding:26px 0 18px}
+.badge{display:inline-block;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px}
+
+/* quiz */
+.top{position:sticky;top:0;z-index:5;margin:-14px -14px 12px;padding:calc(10px + env(safe-area-inset-top,0)) 14px 10px;
+  background:rgba(242,242,247,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:.5px solid var(--sep)}
+.top-r{display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.top-r b{font-size:15px}
+.link{color:var(--blue);background:none;border:0;font:inherit;font-weight:500;cursor:pointer;padding:0}
+.bar{height:4px;background:var(--sep);border-radius:4px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);transition:width .25s}
+.q{font-size:16px;font-weight:600;line-height:1.45;margin:6px 0 14px;white-space:pre-line}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid transparent;
+  border-radius:12px;padding:11px 12px;margin-bottom:8px;font:inherit;font-size:15px;color:var(--label);cursor:pointer;transition:background .15s,border-color .15s}
+.opt .l{flex:none;width:24px;height:24px;border-radius:50%;background:#f2f2f7;color:var(--sec);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:-1px}
+.opt.sel{border-color:var(--blue);background:#f4f9ff}
+.opt.sel .l{background:var(--blue);color:#fff}
+.nav{position:fixed;left:0;right:0;bottom:var(--dockh,0px);z-index:6;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:.5px solid var(--sep);padding:10px 14px}
+.nav>div{max-width:400px;margin:0 auto;display:flex;gap:8px}
+.nav .btn{padding:11px}
+
+/* sheet */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:f .18s}
+.sheet{background:var(--bg);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:14px 14px calc(16px + env(safe-area-inset-bottom,0));max-height:86vh;overflow:auto;animation:u .22s}
+.alert{background:rgba(255,255,255,.96);border-radius:14px;width:270px;text-align:center;overflow:hidden;align-self:center;animation:f .18s}
+.alert .t{padding:18px 16px 14px}
+.alert .t b{font-size:16px;display:block;margin-bottom:4px}
+.alert .a{display:flex;border-top:.5px solid var(--sep)}
+.alert .a button{flex:1;background:none;border:0;padding:12px;font:inherit;font-size:16px;color:var(--blue);cursor:pointer}
+.alert .a button+button{border-left:.5px solid var(--sep);font-weight:600}
+@keyframes u{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes f{from{opacity:0}to{opacity:1}}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.grid button{aspect-ratio:1;border:0;border-radius:10px;background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--label);cursor:pointer}
+.grid button.done{background:var(--blue-soft);color:var(--blue)}
+.grid button.cur{background:var(--blue);color:#fff}
+
+/* result */
+.ring{position:relative;width:150px;height:150px;margin:6px auto 10px}
+.ring svg{transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .n b{font-size:38px;font-weight:700;letter-spacing:-1px;line-height:1}
+.ring .n span{font-size:12px;color:var(--sec);margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:20px;font-weight:700}
+.stat span{font-size:12px;color:var(--sec)}
+.pbar{height:6px;background:var(--sep);border-radius:6px;overflow:hidden;margin-top:6px}
+.pbar i{display:block;height:100%;background:var(--blue);border-radius:6px}
+.status{font-size:12px;text-align:center;color:var(--sec);margin-bottom:12px}
+.status.ok{color:var(--green-d)}.status.err{color:var(--red-d)}
+
+/* review */
+.seg{display:flex;background:#e3e3e8;border-radius:9px;padding:2px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:transparent;border-radius:7px;padding:6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--label)}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+.rv-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:var(--sec)}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.tag.ok{background:var(--green-soft);color:var(--green-d)}
+.tag.no{background:var(--red-soft);color:var(--red-d)}
+.tag.bl{background:#eee;color:var(--sec)}
+.ans{border-radius:9px;padding:8px 10px;margin-top:6px;font-size:14px}
+.ans small{display:block;font-size:11px;font-weight:600;margin-bottom:1px}
+.ans.w{background:var(--red-soft);color:var(--red-d)}
+.ans.r{background:var(--green-soft);color:var(--green-d)}
+.exp{margin-top:8px;font-size:13.5px;color:#3a3a3c;background:#f7f7fa;border-radius:9px;padding:9px 10px;white-space:pre-line}
+.exp b{display:block;font-size:11px;color:var(--sec);margin-bottom:2px}
+.lb{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--sep)}
+.lb:last-child{border-bottom:0}
+.lb .rk{width:22px;text-align:center;font-weight:600;color:var(--sec);font-size:14px}
+.lb .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .sc{font-weight:700}
+.lb.me{background:#f4f9ff}
+canvas#cv{width:100%;border-radius:12px;display:block;background:#fff}
+.back{display:inline-flex;align-items:center;gap:2px;color:var(--blue);background:none;border:0;font:inherit;font-size:16px;padding:6px 0;cursor:pointer;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="foot">
+  <div class="foot-c">
+    
+    <div class="foot-t"><b>Simulasi by Juan</b><span>Matematika Ekonomi dan Bisnis</span></div>
+    <a class="foot-ig" href="https://instagram.com/ajuan_apriansyah" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      @ajuan_apriansyah
+    </a>
+  </div>
+</div>
+
+<div class="dock" id="dock">
+  <button class="dock-h" id="dtog" aria-expanded="true" aria-label="Sembunyikan iklan">
+    <span class="grip"></span>
+    <span>Iklan</span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="dock-b"><div><div class="dock-i" id="adbox"></div></div></div>
+</div>
+<div id="modal"></div>
+
+<script>
+/* ===== Konfigurasi ===== */
+const DB = 'https://simulasi-fb840-default-rtdb.asia-southeast1.firebasedatabase.app';
+const NODE = 'hasil';
+const TOPICS = ['Fungsi Linear', 'Barisan dan Deret', 'Pajak dan Subsidi'];
+
+/* ===== Bank soal: [topik, soal, jawaban benar, [3 pengecoh], pembahasan] ===== */
+const BANK = [
+/* --- Fungsi Linear --- */
+[0,'Manakah fungsi berikut yang merupakan fungsi linear?','Y = 8 + 2X',['Y = 3X² - 4X + 5','Y = 15','Y = 2X² + 3X + 1'],
+ 'Fungsi linear memiliki pangkat tertinggi X sama dengan 1 dengan bentuk umum Y = a + bX. Y = 8 + 2X memenuhi syarat tersebut. Y = 3X² - 4X + 5 adalah fungsi kuadrat, sedangkan Y = 15 adalah fungsi konstan.'],
+[0,'Fungsi Y = 3X² - 4X + 5 termasuk jenis fungsi ...','Kuadrat',['Linear','Konstan','Eksponensial'],
+ 'Pangkat tertinggi variabel X adalah 2, sehingga fungsi tersebut adalah fungsi kuadrat dengan grafik berbentuk parabola.'],
+[0,'Grafik fungsi konstan Y = 10 berbentuk ...','Garis horizontal sejajar sumbu X',['Garis lurus miring ke atas','Kurva parabola','Garis vertikal sejajar sumbu Y'],
+ 'Pada fungsi konstan, nilai Y selalu tetap berapa pun nilai X, sehingga grafiknya berupa garis horizontal yang sejajar sumbu X.'],
+[0,'Pada persamaan Y = a + bX, konstanta a menunjukkan ...','Nilai Y saat X = 0 (titik potong sumbu Y)',['Tingkat perubahan Y untuk setiap kenaikan 1 unit X','Nilai X saat Y = 0','Variabel bebas'],
+ 'Konstanta (intercept) a adalah nilai Y ketika X = 0, yaitu titik potong garis dengan sumbu Y. Tingkat perubahan Y terhadap X ditunjukkan oleh koefisien b (gradien).'],
+[0,'Pada hubungan antara harga es kopi dan jumlah es kopi yang dibeli, variabel bebas (X) adalah ...','Harga es kopi',['Jumlah es kopi yang dibeli','Pendapatan penjual','Konstanta fungsi'],
+ 'Variabel bebas adalah variabel yang memengaruhi, yaitu harga. Jumlah pembelian adalah variabel terikat (Y) karena nilainya dipengaruhi oleh harga.'],
+[0,'Pada hubungan konsumsi dan pendapatan, variabel terikat (Y) adalah ...','Konsumsi',['Pendapatan','Konsumsi dan pendapatan sekaligus','Tidak ada yang terikat'],
+ 'Konsumsi dipengaruhi oleh pendapatan, sehingga konsumsi adalah variabel terikat (Y) dan pendapatan adalah variabel bebas (X).'],
+[0,'Pada fungsi Y = 50 + 3X, pernyataan yang benar adalah ...','Hubungan X dan Y positif; setiap kenaikan 1 unit X menaikkan Y sebesar 3',['Hubungan X dan Y negatif; setiap kenaikan 1 unit X menurunkan Y sebesar 3','Konstantanya 3 dan koefisiennya 50','Nilai Y selalu tetap 50'],
+ 'Konstanta a = 50 dan koefisien b = 3. Karena b bernilai positif, hubungan X dan Y searah: setiap X naik 1 unit, Y naik 3 unit.'],
+[0,'Diketahui Y = 20 - 4X. Nilai Y jika X = 3 adalah ...','8',['32','12','-4'],
+ 'Y = 20 - 4(3) = 20 - 12 = 8. Pasangan (3, 8) adalah titik pada grafik.'],
+[0,'Diketahui Y = 15 + 3X. Nilai Y jika X = 5 adalah ...','30',['75','23','20'],
+ 'Y = 15 + 3(5) = 15 + 15 = 30.'],
+[0,'Diketahui Y = 40 - 5X. Nilai Y jika X = 6 adalah ...','10',['70','34','6'],
+ 'Y = 40 - 5(6) = 40 - 30 = 10.'],
+[0,'Gradien garis yang melalui titik A(2, 10) dan B(6, 18) adalah ...','2',['0,5','4','8'],
+ 'b = (Y2 - Y1)/(X2 - X1) = (18 - 10)/(6 - 2) = 8/4 = 2.'],
+[0,'Persamaan fungsi linear yang melalui titik A(1, 5) dan B(4, 14) adalah ...','Y = 2 + 3X',['Y = 3 + 2X','Y = 5 + 3X','Y = 2 + 9X'],
+ 'Gradien b = (14 - 5)/(4 - 1) = 3. Substitusi titik A(1, 5): 5 = a + 3(1), maka a = 2. Persamaannya Y = 2 + 3X.'],
+[0,'Persamaan fungsi linear yang melalui titik A(3, 8) dan B(7, 20) adalah ...','Y = -1 + 3X',['Y = 1 + 3X','Y = 8 + 3X','Y = 17 + 3X'],
+ 'Gradien b = (20 - 8)/(7 - 3) = 3. Substitusi titik A(3, 8): 8 = a + 3(3), maka a = -1. Persamaannya Y = -1 + 3X.'],
+[0,'Pada harga P = 8 jumlah permintaan Qd = 24 unit, dan pada P = 12 jumlah permintaan Qd = 16 unit. Fungsi permintaannya adalah ...','Qd = 40 - 2P',['Qd = 24 - 2P','Qd = 40 + 2P','Qd = 8 - 2P'],
+ 'b = (16 - 24)/(12 - 8) = -2. Gunakan Q - Q1 = b(P - P1): Q - 24 = -2(P - 8), sehingga Q = 24 - 2P + 16 = 40 - 2P.'],
+[0,'Pada harga P = 8 jumlah penawaran Qs = 12 unit, dan pada P = 12 jumlah penawaran Qs = 20 unit. Fungsi penawarannya adalah ...','Qs = -4 + 2P',['Qs = 4 + 2P','Qs = 12 + 2P','Qs = -16 + 2P'],
+ 'd = (20 - 12)/(12 - 8) = 2. Gunakan Q - Q1 = d(P - P1): Q - 12 = 2(P - 8), sehingga Q = 12 + 2P - 16 = -4 + 2P.'],
+[0,'Pernyataan yang sesuai dengan hukum permintaan adalah ...','Jika harga naik, jumlah barang yang diminta cenderung turun',['Jika harga naik, jumlah barang yang diminta cenderung naik','Harga tidak memengaruhi jumlah barang yang diminta','Jumlah barang yang diminta selalu tetap'],
+ 'Hukum permintaan menyatakan hubungan harga (P) dan jumlah yang diminta (Qd) berlawanan arah (negatif), sehingga kurva permintaan menurun dari kiri atas ke kanan bawah.'],
+[0,'Diketahui Qd = 40 - 2P dan Qs = -10 + 2P. Titik keseimbangan pasar E(Qe; Pe) adalah ...','E(15; 12,5)',['E(12,5; 15)','E(20; 10)','E(15; 10)'],
+ 'Qd = Qs: 40 - 2P = -10 + 2P, maka 50 = 4P dan Pe = 12,5. Qe = 40 - 2(12,5) = 15. Jadi E(15; 12,5).'],
+[0,'Data pasar: pada P = 2 diperoleh Qd = 12 dan Qs = 4; pada P = 4 diperoleh Qd = 8 dan Qs = 8. Titik keseimbangan E(Qe; Pe) adalah ...','E(8; 4)',['E(4; 8)','E(8; 2)','E(12; 2)'],
+ 'Fungsi permintaan: Qd = 16 - 2P. Fungsi penawaran: Qs = 2P. Qd = Qs: 16 - 2P = 2P, maka Pe = 4 dan Qe = 2(4) = 8. Jadi E(8; 4).'],
+[0,'Pada fungsi penawaran Qs = -c + dP, koefisien d bernilai ...','Positif, karena harga naik menyebabkan penawaran naik',['Negatif, karena harga naik menyebabkan penawaran turun','Nol, karena harga tidak memengaruhi penawaran','Dapat positif atau negatif tergantung produsen'],
+ 'Hukum penawaran menyatakan P dan Qs berbanding lurus (searah), sehingga koefisien d selalu positif dan kurva penawaran menaik.'],
+[0,'Syarat matematis tercapainya keseimbangan pasar adalah ...','Qd = Qs (atau Pd = Ps)',['Qd > Qs','Qd < Qs','P = 0'],
+ 'Keseimbangan pasar terjadi saat jumlah yang diminta konsumen tepat sama dengan jumlah yang ditawarkan produsen pada tingkat harga tertentu.'],
+
+/* --- Barisan dan Deret --- */
+[1,'Bentuk 3 + 6 + 9 + 12 + ... disebut ...','Deret',['Barisan','Rasio','Gradien'],
+ 'Barisan adalah susunan bilangan yang dipisahkan koma (3, 6, 9, 12, ...). Deret adalah penjumlahan suku-suku barisan yang dihubungkan tanda tambah.'],
+[1,'Barisan 5, 15, 45, 135, ... memiliki pola ...','Geometri dengan rasio 3',['Aritmetika dengan beda 10','Aritmetika dengan beda 3','Geometri dengan rasio 5'],
+ 'Uji rasio: 15/5 = 45/15 = 135/45 = 3 (konstan). Selisihnya tidak konstan (10, 30, 90), sehingga pola ini geometri dengan r = 3.'],
+[1,'Barisan 100, 90, 80, 70, ... memiliki pola ...','Aritmetika dengan beda -10',['Geometri dengan rasio 0,9','Geometri dengan rasio -10','Aritmetika dengan beda 10'],
+ 'Uji selisih: 90 - 100 = 80 - 90 = 70 - 80 = -10 (konstan), sehingga pola aritmetika dengan b = -10.'],
+[1,'Diketahui barisan 4, 7, 10, 13, ... Suku ke-10 (U10) adalah ...','31',['30','34','40'],
+ 'a = 4, b = 3. Un = a + (n - 1)b, maka U10 = 4 + 9(3) = 31.'],
+[1,'Diketahui barisan 50, 45, 40, 35, ... Suku ke-8 (U8) adalah ...','15',['20','10','90'],
+ 'a = 50, b = -5. U8 = 50 + 7(-5) = 50 - 35 = 15.'],
+[1,'Barisan aritmetika dengan a = 12 dan b = 5. Suku ke-20 (U20) adalah ...','107',['112','100','95'],
+ 'U20 = a + (n - 1)b = 12 + 19(5) = 12 + 95 = 107.'],
+[1,'Diketahui deret 3 + 6 + 9 + 12 + ... Jumlah 10 suku pertama (S10) adalah ...','165',['30','330','150'],
+ 'a = 3, b = 3. S10 = (10/2)[2(3) + 9(3)] = 5(33) = 165.'],
+[1,'Deret aritmetika dengan a = 5 dan b = 4. Jumlah 15 suku pertama (S15) adalah ...','495',['450','510','330'],
+ 'Sn = (n/2)[2a + (n - 1)b], maka S15 = 7,5[10 + 14(4)] = 7,5(66) = 495.'],
+[1,'Deret aritmetika dengan a = 8 dan b = 5. Jumlah 20 suku pertama (S20) adalah ...','1.110',['1.100','1.020','2.220'],
+ 'S20 = (20/2)[2(8) + 19(5)] = 10(16 + 95) = 10(111) = 1.110.'],
+[1,'Barisan geometri dengan a = 3 dan r = 2. Suku ke-10 (U10) adalah ...','1.536',['3.072','60','1.024'],
+ 'Un = a . r^(n-1), maka U10 = 3 . 2^9 = 3 . 512 = 1.536.'],
+[1,'Diketahui deret geometri 2 + 6 + 18 + 54 + ... Jumlah 8 suku pertama (S8) adalah ...','6.560',['13.120','2.186','6.561'],
+ 'a = 2, r = 3. Sn = a(r^n - 1)/(r - 1), maka S8 = 2(3^8 - 1)/2 = 6.561 - 1 = 6.560.'],
+[1,'Perusahaan genteng memproduksi 3.000 buah pada bulan pertama dan produksi naik tetap 500 buah setiap bulan. Total produksi selama 5 bulan pertama adalah ...','20.000 buah',['15.000 buah','5.000 buah','17.500 buah'],
+ 'a = 3.000, b = 500. U5 = 3.000 + 4(500) = 5.000. S5 = (5/2)(3.000 + 5.000) = 2,5(8.000) = 20.000 buah.'],
+[1,'Penerimaan PT Cemerlang sebesar Rp720 juta pada tahun ke-5 (U5) dan Rp980 juta pada tahun ke-7 (U7), berpola aritmetika. Perkembangan penerimaan per tahun (b) adalah ...','Rp130 juta',['Rp260 juta','Rp65 juta','Rp180 juta'],
+ 'U7 - U5 = (a + 6b) - (a + 4b) = 2b = 980 - 720 = 260, maka b = 130 (Rp130 juta per tahun).'],
+[1,'Penerimaan suatu usaha berpola aritmetika dengan a = Rp200 juta dan b = Rp130 juta. Penerimaan mencapai Rp460 juta pada tahun ke ...','3',['2','4','5'],
+ 'Un = a + (n - 1)b: 460 = 200 + (n - 1)130, maka 260 = (n - 1)130 sehingga n - 1 = 2 dan n = 3.'],
+[1,'Sebuah usaha menghasilkan 2.000 unit pada bulan pertama dan produksi naik konstan 300 unit setiap bulan. Produksi pada bulan ke-10 adalah ...','4.700 unit',['5.000 unit','4.400 unit','2.300 unit'],
+ 'U10 = a + (n - 1)b = 2.000 + 9(300) = 2.000 + 2.700 = 4.700 unit.'],
+[1,'Rina menabung Rp5.000.000 dengan bunga majemuk 10% per tahun. Nilai tabungan pada akhir tahun ke-5 adalah ...','Rp8.052.550',['Rp7.500.000','Rp8.250.000','Rp8.805.000'],
+ 'Fn = P(1 + i)^n = 5.000.000 (1,1)^5 = 5.000.000 x 1,61051 = Rp8.052.550. Rp7.500.000 adalah hasil bunga tunggal.'],
+[1,'Andi ingin memiliki Rp10.000.000 tiga tahun lagi dengan bunga majemuk 8% per tahun. Uang yang harus diinvestasikan sekarang sekitar ...','Rp7.938.322',['Rp7.600.000','Rp8.000.000','Rp12.597.120'],
+ 'Present value: P = F/(1 + i)^n = 10.000.000/(1,08)^3 = 10.000.000/1,259712 = Rp7.938.322 (dibulatkan).'],
+[1,'Tabungan mahasiswa diproyeksikan menjadi Rp532.400 pada 3 tahun lagi dengan bunga 10% per tahun. Tabungan saat ini adalah ...','Rp400.000',['Rp425.000','Rp372.680','Rp479.160'],
+ 'P = 532.400/(1,1)^3 = 532.400/1,331 = Rp400.000.'],
+[1,'Penduduk sebuah kota berjumlah 500.000 jiwa dan tumbuh 3% per tahun secara geometris. Perkiraan jumlah penduduk setelah 8 tahun adalah ...','633.385 jiwa',['620.000 jiwa','664.000 jiwa','1.266.770 jiwa'],
+ 'Pn = P(1 + r)^n = 500.000 (1,03)^8 = 500.000 x 1,26677 = 633.385 jiwa. Pertumbuhan 3% per tahun bersifat majemuk, bukan penambahan tetap 15.000 per tahun.'],
+[1,'Menurut teori Malthus, pertumbuhan penduduk mengikuti deret ... sedangkan produksi pangan mengikuti deret ...','Geometri (deret ukur); aritmetika (deret hitung)',['Aritmetika (deret hitung); geometri (deret ukur)','Geometri; geometri','Aritmetika; aritmetika'],
+ 'Malthus menyatakan penduduk tumbuh menurut deret ukur (geometri, kelipatan), sedangkan pangan tumbuh menurut deret hitung (aritmetika, penambahan tetap).'],
+
+/* --- Pajak dan Subsidi --- */
+[2,'Pajak spesifik adalah pungutan pemerintah yang besarnya ...','Nominal tetap per unit barang yang dijual',['Persentase tetap dari harga jual','Nominal tetap sekali di awal periode','Hanya dibebankan pada konsumen'],
+ 'Pajak spesifik (t) ditetapkan dalam nominal tetap per unit barang, misalnya cukai rokok Rp per batang, berapa pun harga barangnya.'],
+[2,'Pemerintah mengenakan pajak spesifik Rp2.000 per unit. Jika produsen menjual 100 unit, total pajak yang dibayar adalah ...','Rp200.000',['Rp2.000','Rp20.000','Rp102.000'],
+ 'Total pajak = jumlah unit x pajak per unit = 100 x Rp2.000 = Rp200.000.'],
+[2,'Dampak pajak spesifik terhadap keseimbangan pasar adalah ...','Harga keseimbangan naik dan jumlah keseimbangan turun',['Harga keseimbangan turun dan jumlah keseimbangan naik','Harga dan jumlah keseimbangan sama-sama naik','Harga dan jumlah keseimbangan sama-sama turun'],
+ 'Pajak menambah biaya produksi sehingga penawaran berkurang. Akibatnya Pe\' naik dan Qe\' turun dibandingkan keseimbangan awal.'],
+[2,'Pengenaan pajak spesifik menyebabkan kurva penawaran ...','Bergeser ke atas/kiri secara sejajar sebesar t',['Bergeser ke bawah/kanan secara sejajar sebesar t','Tidak bergeser, tetapi kurva permintaan bergeser ke kiri','Berputar mengubah kemiringan'],
+ 'Pajak adalah tambahan biaya per unit bagi produsen, sehingga kurva penawaran bergeser sejajar ke atas (kiri) sebesar t.'],
+[2,'Ketika pemerintah mengenakan pajak spesifik pada produsen, fungsi yang TIDAK berubah adalah ...','Fungsi permintaan',['Fungsi penawaran','Fungsi permintaan dan fungsi penawaran','Tidak ada, keduanya berubah'],
+ 'Konsumen merespons harga akhir pasar, sehingga fungsi permintaan (Qd/Pd) tetap. Yang bergeser adalah fungsi penawaran.'],
+[2,'Fungsi penawaran Ps = 3 + 0,5Q dikenai pajak spesifik t = 3. Fungsi penawaran setelah pajak adalah ...','Ps\' = 6 + 0,5Q',['Ps\' = 0 + 0,5Q','Ps\' = 3 + 3,5Q','Ps\' = 9 + 0,5Q'],
+ 'Untuk bentuk P = f(Q), Ps\' = Ps + t = (3 + 0,5Q) + 3 = 6 + 0,5Q.'],
+[2,'Fungsi penawaran Qs = -4 + 2P dikenai pajak spesifik t = 3. Fungsi penawaran setelah pajak adalah ...','Qs\' = -10 + 2P',['Qs\' = -1 + 2P','Qs\' = -7 + 2P','Qs\' = -10 - 2P'],
+ 'Untuk bentuk Q = f(P), ganti P dengan (P - t): Qs\' = -4 + 2(P - 3) = -4 + 2P - 6 = -10 + 2P.'],
+[2,'Diketahui Pd = 30 - 2Q dan Ps = 6 + Q (keseimbangan awal Q = 8, P = 14). Dengan pajak spesifik t = 3, keseimbangan baru adalah ...','Q = 7 dan P = 16',['Q = 8 dan P = 14','Q = 7 dan P = 13','Q = 6 dan P = 18'],
+ 'Ps\' = 6 + Q + 3 = 9 + Q. Pd = Ps\': 30 - 2Q = 9 + Q, maka 3Q = 21 dan Q = 7. P = 30 - 2(7) = 16.'],
+[2,'Pada soal sebelumnya (Pd = 30 - 2Q, Ps = 6 + Q, t = 3) harga naik dari 14 menjadi 16. Beban pajak yang ditanggung konsumen dan produsen adalah ...','Konsumen Rp2 dan produsen Rp1',['Konsumen Rp1 dan produsen Rp2','Konsumen Rp3 dan produsen Rp0','Konsumen Rp1,5 dan produsen Rp1,5'],
+ 'Harga yang dibayar konsumen naik 16 - 14 = 2. Harga bersih produsen Pp = 16 - 3 = 13, turun 14 - 13 = 1. Total 2 + 1 = 3 = t.'],
+[2,'Diketahui Pd = 18 - Q dan Ps = 6 + Q. Dengan pajak spesifik t = 2, keseimbangan setelah pajak adalah ...','Q = 5 dan P = 13',['Q = 6 dan P = 12','Q = 7 dan P = 11','Q = 5 dan P = 11'],
+ 'Keseimbangan awal Q = 6, P = 12. Ps\' = 6 + Q + 2 = 8 + Q. Pd = Ps\': 18 - Q = 8 + Q, maka Q = 5 dan P = 18 - 5 = 13.'],
+[2,'Pada kasus Pd = 18 - Q, Ps = 6 + Q, t = 2 (setelah pajak Q = 5, P = 13), harga yang diterima produsen dan pembagian beban pajak adalah ...','Produsen menerima Rp11; konsumen menanggung Rp1 dan produsen Rp1',['Produsen menerima Rp13; konsumen menanggung Rp2 dan produsen Rp0','Produsen menerima Rp11; konsumen menanggung Rp2 dan produsen Rp0','Produsen menerima Rp12; konsumen menanggung Rp0 dan produsen Rp2'],
+ 'Pp = Pc - t = 13 - 2 = 11. Konsumen: 13 - 12 = Rp1. Produsen: 12 - 11 = Rp1. Total beban = Rp2 = t.'],
+[2,'Pada soal pajak: Qd = 20 - P, Qs = -4 + 2P, t = Rp3. Keseimbangan setelah pajak adalah ...','Qe\' = 10 dan Pe\' = 10',['Qe\' = 12 dan Pe\' = 8','Qe\' = 10 dan Pe\' = 8','Qe\' = 12 dan Pe\' = 10'],
+ 'Qs\' = -4 + 2(P - 3) = -10 + 2P. Qd = Qs\': 20 - P = -10 + 2P, maka 3P = 30 dan Pe\' = 10. Qe\' = 20 - 10 = 10. Sebelum pajak E(12, 8).'],
+[2,'Subsidi spesifik (s) bersifat sebagai ...','Pajak negatif yang mengurangi biaya efektif produksi per unit',['Pajak tambahan yang menaikkan biaya produksi','Pungutan persentase dari penjualan','Batas harga tertinggi yang selalu menaikkan harga'],
+ 'Subsidi adalah bantuan nominal tetap per unit dari pemerintah sehingga mengurangi biaya efektif produsen (disebut juga pajak negatif).'],
+[2,'Dampak subsidi spesifik terhadap pasar adalah ...','Kurva penawaran bergeser ke bawah/kanan, harga turun, jumlah naik',['Kurva penawaran bergeser ke atas/kiri, harga naik, jumlah turun','Kurva permintaan bergeser ke kanan, harga naik, jumlah naik','Kurva penawaran tetap, harga dan jumlah tidak berubah'],
+ 'Subsidi menurunkan biaya produsen sehingga penawaran meningkat. Hasilnya Pe\'\' < Pe dan Qe\'\' > Qe.'],
+[2,'Fungsi penawaran Ps = 3 + 0,5Q mendapat subsidi s = 1,5 per unit. Fungsi penawaran setelah subsidi adalah ...','Ps\'\' = 1,5 + 0,5Q',['Ps\'\' = 4,5 + 0,5Q','Ps\'\' = 3 + 0,5Q','Ps\'\' = 1,5 - 0,5Q'],
+ 'Untuk bentuk P = f(Q), Ps\'\' = Ps - s = (3 + 0,5Q) - 1,5 = 1,5 + 0,5Q.'],
+[2,'Pada kasus Pd = 15 - Q, Ps = 3 + 0,5Q, subsidi s = 1,5, keseimbangan baru E\'\'(9; 6). Harga yang diterima produsen per unit adalah ...','Rp7,5',['Rp6','Rp4,5','Rp9'],
+ 'Harga yang diterima produsen Pp = Pc + s = 6 + 1,5 = Rp7,5. Konsumen membayar Rp6, pemerintah menanggung Rp1,5.'],
+[2,'Diketahui Pd = 18 - Q dan Ps = 6 + Q (awal Q = 6, P = 12). Dengan subsidi spesifik s = 2, keseimbangan baru adalah ...','Q = 7 dan P = 11',['Q = 6 dan P = 12','Q = 8 dan P = 10','Q = 7 dan P = 13'],
+ 'Ps\'\' = 6 + Q - 2 = 4 + Q. Pd = Ps\'\': 18 - Q = 4 + Q, maka Q = 7 dan P = 18 - 7 = 11.'],
+[2,'Pada kasus Pd = 18 - Q, Ps = 6 + Q, s = 2 (setelah subsidi Q = 7, P = 11), manfaat subsidi yang diterima konsumen dan produsen adalah ...','Konsumen Rp1 dan produsen Rp1',['Konsumen Rp2 dan produsen Rp0','Konsumen Rp0 dan produsen Rp2','Konsumen Rp1,5 dan produsen Rp0,5'],
+ 'Konsumen: harga turun dari 12 ke 11 = Rp1. Produsen menerima Pp = 11 + 2 = 13, naik dari 12 = Rp1. Total manfaat = Rp2 = s.'],
+[2,'Diketahui Pd = 30 - 2Q dan Ps = 6 + Q. Dengan subsidi spesifik s = 3, keseimbangan baru adalah ...','Q = 9 dan P = 12',['Q = 8 dan P = 14','Q = 9 dan P = 15','Q = 10 dan P = 10'],
+ 'Ps\'\' = 6 + Q - 3 = 3 + Q. Pd = Ps\'\': 30 - 2Q = 3 + Q, maka 3Q = 27 dan Q = 9. P = 30 - 2(9) = 12.'],
+[2,'Pada kasus Pd = 30 - 2Q, Ps = 6 + Q, s = 3 (awal P = 14; setelah subsidi Q = 9, P = 12), manfaat subsidi bagi konsumen dan produsen adalah ...','Konsumen Rp2 dan produsen Rp1',['Konsumen Rp1 dan produsen Rp2','Konsumen Rp3 dan produsen Rp0','Konsumen Rp1,5 dan produsen Rp1,5'],
+ 'Konsumen: 14 - 12 = Rp2. Produsen menerima Pp = 12 + 3 = 15, naik dari 14 = Rp1. Total = Rp3 = s.'],
+[2,'Pada soal subsidi: Pd = 45 - 4Q, Ps = 5 + Q, s = Rp4. Keseimbangan setelah subsidi adalah ...','Q = 8,8 dan P = 9,8',['Q = 8 dan P = 13','Q = 8,8 dan P = 13,8','Q = 9 dan P = 9'],
+ 'Ps\'\' = 5 + Q - 4 = 1 + Q. Pd = Ps\'\': 45 - 4Q = 1 + Q, maka 5Q = 44 dan Q = 8,8. P = 1 + 8,8 = 9,8. Sebelum subsidi E(8, 13).']
+];
+
+/* ===== Util ===== */
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const L = ['A', 'B', 'C', 'D'];
+const fmt = n => (Math.round(n * 10) / 10).toString().replace('.', ',');
+
+let S = { name: '', qs: [], ans: [], idx: 0, saved: 'idle', rec: null, filter: 'wrong' };
+
+function build() {
+  S.qs = shuffle(BANK).map(b => {
+    const opts = shuffle([b[2], ...b[3]]);
+    return { t: b[0], q: b[1], opts, c: opts.indexOf(b[2]), e: b[4] };
+  });
+  S.ans = new Array(S.qs.length).fill(null);
+  S.idx = 0; S.saved = 'idle'; S.rec = null; S.filter = 'wrong';
+}
+
+/* ===== Layar: mulai ===== */
+function home() {
+  window.onbeforeunload = null;
+  app.innerHTML = `
+    <div class="hero center">
+      <span class="badge">Simulasi UTS</span>
+      <h1 class="mt">Matematika Ekonomi dan Bisnis</h1>
+      <p class="sub">S1 Ekonomi, Fakultas Ekonomika dan Bisnis</p>
+    </div>
+    <div class="card">
+      <h2>Masukkan nama</h2>
+      <input type="text" id="nm" maxlength="40" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.name)}">
+    </div>
+    <div class="group">
+      <div class="row"><span>Jumlah soal</span><b>60 pilihan ganda</b></div>
+      <div class="row"><span>Waktu</span><b>Tanpa batas</b></div>
+      <div class="row"><span>Materi</span><b>3 topik</b></div>
+    </div>
+    <p class="sub" style="margin:-4px 4px 14px">Fungsi linear dan keseimbangan pasar, barisan dan deret, serta pajak dan subsidi. Soal dan urutan pilihan diacak setiap percobaan.</p>
+    <div class="btns">
+      <button class="btn" id="go">Mulai Simulasi</button>
+      <button class="btn sec" id="lb">Papan Peringkat</button>
+    </div>`;
+  const nm = $('#nm');
+  const start = () => {
+    const v = nm.value.trim();
+    if (v.length < 2) { nm.focus(); nm.style.outlineColor = 'var(--red)'; return; }
+    S.name = v; build(); quiz();
+  };
+  $('#go').onclick = start;
+  nm.onkeydown = e => { if (e.key === 'Enter') start(); };
+  nm.oninput = () => nm.style.outlineColor = '';
+  $('#lb').onclick = () => leaderboard(home);
+}
+
+/* ===== Layar: ujian ===== */
+function quiz() {
+  window.onbeforeunload = () => 'Pengerjaan belum selesai.';
+  const q = S.qs[S.idx], n = S.qs.length;
+  const done = S.ans.filter(a => a !== null).length;
+  app.innerHTML = `
+    <div class="top">
+      <div class="top-r"><span><b>Soal ${S.idx + 1}</b> <span class="sub">dari ${n}</span></span>
+        <button class="link" id="lst">Daftar soal</button></div>
+      <div class="bar"><i style="width:${done / n * 100}%"></i></div>
+    </div>
+    <p class="sub">${TOPICS[q.t]}</p>
+    <div class="q">${esc(q.q)}</div>
+    ${q.opts.map((o, i) => `<button class="opt ${S.ans[S.idx] === i ? 'sel' : ''}" data-i="${i}"><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`).join('')}
+    <div class="nav"><div>
+      <button class="btn sec" id="prev" ${S.idx === 0 ? 'disabled' : ''}>Sebelumnya</button>
+      ${S.idx === n - 1 ? '<button class="btn" id="fin">Selesai</button>' : '<button class="btn" id="next">Selanjutnya</button>'}
+    </div></div>`;
+  app.querySelectorAll('.opt').forEach(b => b.onclick = () => { S.ans[S.idx] = +b.dataset.i; quiz(); });
+  $('#prev').onclick = () => { S.idx--; quiz(); window.scrollTo(0, 0); };
+  const nx = $('#next'); if (nx) nx.onclick = () => { S.idx++; quiz(); window.scrollTo(0, 0); };
+  const fin = $('#fin'); if (fin) fin.onclick = askFinish;
+  $('#lst').onclick = listSheet;
+}
+
+function listSheet() {
+  $('#modal').innerHTML = `<div class="ov" id="ov"><div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2 style="margin:0">Daftar soal</h2><button class="link" id="cl">Tutup</button></div>
+    <div class="grid">${S.qs.map((_, i) => `<button class="${i === S.idx ? 'cur' : S.ans[i] !== null ? 'done' : ''}" data-i="${i}">${i + 1}</button>`).join('')}</div>
+    <p class="sub mt">Terjawab ${S.ans.filter(a => a !== null).length} dari ${S.qs.length}</p>
+    <button class="btn mt" id="fin2">Selesaikan Ujian</button>
+  </div></div>`;
+  const close = () => $('#modal').innerHTML = '';
+  $('#cl').onclick = close;
+  $('#ov').onclick = e => { if (e.target.id === 'ov') close(); };
+  $('#modal').querySelectorAll('.grid button').forEach(b => b.onclick = () => { S.idx = +b.dataset.i; close(); quiz(); window.scrollTo(0, 0); });
+  $('#fin2').onclick = () => { close(); askFinish(); };
+}
+
+function askFinish() {
+  const blank = S.ans.filter(a => a === null).length;
+  $('#modal').innerHTML = `<div class="ov"><div class="alert"><div class="t"><b>Selesaikan ujian?</b>
+    <span class="sub" style="font-size:13px">${blank ? `Masih ada ${blank} soal yang belum dijawab.` : 'Semua soal sudah dijawab.'} Jawaban tidak dapat diubah setelah selesai.</span></div>
+    <div class="a"><button id="no">Kembali</button><button id="ok">Selesai</button></div></div></div>`;
+  $('#no').onclick = () => $('#modal').innerHTML = '';
+  $('#ok').onclick = () => { $('#modal').innerHTML = ''; finish(); };
+}
+
+/* ===== Penilaian & Firebase ===== */
+function calc() {
+  let benar = 0, salah = 0, kosong = 0;
+  const per = TOPICS.map(() => ({ b: 0, t: 0 }));
+  S.qs.forEach((q, i) => {
+    per[q.t].t++;
+    if (S.ans[i] === null) kosong++;
+    else if (S.ans[i] === q.c) { benar++; per[q.t].b++; }
+    else salah++;
+  });
+  const skor = Math.round(benar / S.qs.length * 1000) / 10;
+  return { benar, salah, kosong, skor, per };
+}
+
+function finish() {
+  window.onbeforeunload = null;
+  const r = calc();
+  S.rec = { nama: S.name, skor: r.skor, benar: r.benar, salah: r.salah, kosong: r.kosong, total: S.qs.length, waktu: Date.now() };
+  S.saved = 'saving';
+  result();
+  save();
+}
+
+async function save() {
+  S.saved = 'saving'; setStatus();
+  try {
+    const res = await fetch(`${DB}/${NODE}.json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(S.rec) });
+    if (!res.ok) throw new Error(res.status);
+    const j = await res.json();
+    S.key = j.name;
+    S.saved = 'ok';
+  } catch (e) { S.saved = 'err'; }
+  setStatus();
+}
+function setStatus() {
+  const el = $('#st'); if (!el) return;
+  const m = { saving: ['Menyimpan nilai ke database...', ''], ok: ['Nilai tersimpan di database', 'ok'], err: ['Gagal menyimpan nilai. Periksa koneksi atau aturan database.', 'err'] }[S.saved];
+  el.className = 'status ' + m[1];
+  el.innerHTML = esc(m[0]) + (S.saved === 'err' ? ' <button class="link" id="rt">Coba lagi</button>' : '');
+  const rt = $('#rt'); if (rt) rt.onclick = save;
+}
+
+/* ===== Layar: hasil ===== */
+function grade(s) { return s >= 85 ? 'Sangat baik' : s >= 70 ? 'Baik' : s >= 55 ? 'Cukup' : 'Perlu belajar lagi'; }
+
+function result() {
+  const r = calc(), C = 2 * Math.PI * 62;
+  const col = r.skor >= 70 ? '#34c759' : r.skor >= 55 ? '#ff9500' : '#ff3b30';
+  app.innerHTML = `
+    <div class="center" style="padding-top:12px">
+      <p class="sub">Hasil simulasi</p>
+      <h1>${esc(S.name)}</h1>
+      <div class="ring">
+        <svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="#e5e5ea" stroke-width="11"/>
+        <circle cx="75" cy="75" r="62" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.skor / 100)}"/></svg>
+        <div class="n"><b>${fmt(r.skor)}</b><span>${grade(r.skor)}</span></div>
+      </div>
+    </div>
+    <div class="status" id="st"></div>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--green-d)">${r.benar}</b><span>Benar</span></div>
+      <div class="stat"><b style="color:var(--red-d)">${r.salah}</b><span>Salah</span></div>
+      <div class="stat"><b style="color:var(--sec)">${r.kosong}</b><span>Kosong</span></div>
+    </div>
+    <div class="card">
+      <h2>Per topik</h2>
+      ${r.per.map((p, i) => `<div style="margin-top:${i ? 12 : 4}px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${TOPICS[i]}</span><b>${p.b}/${p.t}</b></div>
+        <div class="pbar"><i style="width:${p.t ? p.b / p.t * 100 : 0}%"></i></div></div>`).join('')}
+    </div>
+    <div class="btns">
+      <button class="btn" id="sh">Bagikan Hasil</button>
+      <button class="btn sec" id="rv">Kunci Jawaban dan Pembahasan</button>
+      <button class="btn sec" id="lb">Papan Peringkat</button>
+      <button class="btn plain" id="re">Ulangi Simulasi</button>
+    </div>`;
+  setStatus();
+  $('#sh').onclick = shareSheet;
+  $('#rv').onclick = review;
+  $('#lb').onclick = () => leaderboard(result);
+  $('#re').onclick = () => { build(); S.name = S.name; home(); };
+}
+
+/* ===== Kunci jawaban ===== */
+function review() {
+  const items = S.qs.map((q, i) => ({ q, i, a: S.ans[i] }));
+  const list = S.filter === 'wrong' ? items.filter(x => x.a !== x.q.c) : items;
+  app.innerHTML = `
+    <button class="back" id="bk">&#8249; Hasil</button>
+    <h1>Kunci jawaban</h1>
+    <p class="sub" style="margin-bottom:12px">Pembahasan setiap soal berdasarkan materi perkuliahan.</p>
+    <div class="seg"><button data-f="wrong" class="${S.filter === 'wrong' ? 'on' : ''}">Salah dan kosong</button><button data-f="all" class="${S.filter === 'all' ? 'on' : ''}">Semua soal</button></div>
+    ${list.length ? list.map(({ q, i, a }) => {
+      const ok = a === q.c, bl = a === null;
+      return `<div class="card">
+        <div class="rv-h"><span>Soal ${i + 1} &middot; ${TOPICS[q.t]}</span><span class="tag ${ok ? 'ok' : bl ? 'bl' : 'no'}">${ok ? 'Benar' : bl ? 'Kosong' : 'Salah'}</span></div>
+        <div style="font-weight:600;white-space:pre-line">${esc(q.q)}</div>
+        ${!ok ? `<div class="ans w"><small>Jawaban Anda</small>${bl ? 'Tidak dijawab' : L[a] + '. ' + esc(q.opts[a])}</div>` : ''}
+        <div class="ans r"><small>Jawaban benar</small>${L[q.c]}. ${esc(q.opts[q.c])}</div>
+        <div class="exp"><b>Penjelasan</b>${esc(q.e)}</div>
+      </div>`;
+    }).join('') : '<div class="card center"><b>Semua jawaban benar.</b><p class="sub">Tidak ada soal yang perlu dibahas.</p></div>'}
+    <button class="btn sec" id="bk2">Kembali ke hasil</button>`;
+  $('#bk').onclick = $('#bk2').onclick = () => { result(); window.scrollTo(0, 0); };
+  app.querySelectorAll('.seg button').forEach(b => b.onclick = () => { S.filter = b.dataset.f; review(); window.scrollTo(0, 0); });
+  window.scrollTo(0, 0);
+}
+
+/* ===== Papan peringkat ===== */
+async function leaderboard(back) {
+  app.innerHTML = `<button class="back" id="bk">&#8249; Kembali</button><h1>Papan peringkat</h1>
+    <p class="sub" style="margin-bottom:12px">20 nilai tertinggi dari semua peserta.</p>
+    <div class="group" id="lbl"><div class="row"><span class="sub">Memuat data...</span></div></div>`;
+  $('#bk').onclick = () => { back(); window.scrollTo(0, 0); };
+  try {
+    const res = await fetch(`${DB}/${NODE}.json?orderBy=%22%24key%22&limitToLast=300`);
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json() || {};
+    const arr = Object.entries(d).map(([k, v]) => ({ k, ...v })).filter(v => typeof v.skor === 'number');
+    arr.sort((a, b) => b.skor - a.skor || a.waktu - b.waktu);
+    const top = arr.slice(0, 20);
+    $('#lbl').innerHTML = top.length ? top.map((v, i) => `<div class="lb ${S.key && v.k === S.key ? 'me' : ''}"><span class="rk">${i + 1}</span><span class="nm">${esc(v.nama || '-')}</span><span class="sc">${fmt(v.skor)}</span></div>`).join('')
+      : '<div class="row"><span class="sub">Belum ada data.</span></div>';
+  } catch (e) {
+    $('#lbl').innerHTML = '<div class="row"><span class="sub" style="color:var(--red-d)">Gagal memuat data. Periksa koneksi atau aturan database.</span></div>';
+  }
+}
+
+/* ===== Kanvas bagikan ===== */
+function drawCanvas() {
+  const r = calc(), W = 1080, H = 1350, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const F = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif';
+  const rr = (X, Y, w, h, rad, fill) => { x.beginPath(); x.roundRect(X, Y, w, h, rad); x.fillStyle = fill; x.fill(); };
+  x.fillStyle = '#f2f2f7'; x.fillRect(0, 0, W, H);
+  rr(60, 60, W - 120, H - 120, 44, '#ffffff');
+  x.textAlign = 'center';
+  x.fillStyle = '#007aff'; x.font = `600 30px ${F}`; x.fillText('SIMULASI UTS', W / 2, 150);
+  x.fillStyle = '#1c1c1e'; x.font = `700 46px ${F}`; x.fillText('Matematika Ekonomi dan Bisnis', W / 2, 212);
+  x.fillStyle = '#8e8e93'; x.font = `400 28px ${F}`; x.fillText('S1 Ekonomi, Fakultas Ekonomika dan Bisnis', W / 2, 258);
+  // nama
+  let nm = S.name; x.fillStyle = '#1c1c1e'; x.font = `600 44px ${F}`;
+  while (x.measureText(nm).width > 820 && nm.length > 3) nm = nm.slice(0, -1);
+  if (nm !== S.name) nm += '...';
+  x.fillText(nm, W / 2, 350);
+  // ring
+  const cx = W / 2, cy = 560, R = 150;
+  x.lineWidth = 28; x.lineCap = 'round';
+  x.strokeStyle = '#e5e5ea'; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+  x.strokeStyle = r.skor >= 70 ? '#34c759' : r.skor >= 55 ? '#ff9500' : '#ff3b30';
+  if (r.skor > 0) { x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * r.skor / 100); x.stroke(); }
+  x.fillStyle = '#1c1c1e'; x.font = `700 110px ${F}`; x.fillText(fmt(r.skor), cx, cy + 36);
+  x.fillStyle = '#8e8e93'; x.font = `500 30px ${F}`; x.fillText(grade(r.skor), cx, cy + 86);
+  // stat
+  const sy = 800, sw = 270, gap = 24, sx = (W - (sw * 3 + gap * 2)) / 2;
+  [['Benar', r.benar, '#248a3d'], ['Salah', r.salah, '#d70015'], ['Kosong', r.kosong, '#8e8e93']].forEach((s, i) => {
+    const X = sx + i * (sw + gap);
+    rr(X, sy, sw, 130, 26, '#f2f2f7');
+    x.fillStyle = s[2]; x.font = `700 56px ${F}`; x.fillText(s[1], X + sw / 2, sy + 70);
+    x.fillStyle = '#8e8e93'; x.font = `400 26px ${F}`; x.fillText(s[0], X + sw / 2, sy + 108);
+  });
+  // topik
+  x.textAlign = 'left';
+  r.per.forEach((p, i) => {
+    const Y = 1010 + i * 90, X = 130, w = W - 260;
+    x.fillStyle = '#1c1c1e'; x.font = `500 28px ${F}`; x.fillText(TOPICS[i], X, Y);
+    x.textAlign = 'right'; x.font = `600 28px ${F}`; x.fillText(`${p.b}/${p.t}`, X + w, Y); x.textAlign = 'left';
+    rr(X, Y + 18, w, 14, 7, '#e5e5ea');
+    if (p.b) rr(X, Y + 18, Math.max(14, w * p.b / p.t), 14, 7, '#007aff');
+  });
+  x.textAlign = 'center'; x.fillStyle = '#8e8e93'; x.font = `400 24px ${F}`;
+  x.fillText(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + '  |  60 soal pilihan ganda', W / 2, H - 90);
+  return c;
+}
+
+function shareSheet() {
+  const c = drawCanvas(), url = c.toDataURL('image/png');
+  $('#modal').innerHTML = `<div class="ov" id="ov"><div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2 style="margin:0">Bagikan hasil</h2><button class="link" id="cl">Tutup</button></div>
+    <img src="${url}" alt="Kartu hasil simulasi" style="width:100%;border-radius:12px;display:block">
+    <div class="btns mt">
+      <button class="btn" id="dosh">Bagikan</button>
+      <button class="btn sec" id="dodl">Simpan Gambar</button>
+    </div></div></div>`;
+  const close = () => $('#modal').innerHTML = '';
+  $('#cl').onclick = close;
+  $('#ov').onclick = e => { if (e.target.id === 'ov') close(); };
+  const download = () => { const a = document.createElement('a'); a.href = url; a.download = 'hasil-simulasi-uts.png'; document.body.appendChild(a); a.click(); a.remove(); };
+  $('#dodl').onclick = download;
+  $('#dosh').onclick = () => {
+    c.toBlob(async b => {
+      const f = new File([b], 'hasil-simulasi-uts.png', { type: 'image/png' });
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          await navigator.share({ files: [f], title: 'Hasil Simulasi UTS', text: `Skor simulasi UTS Matematika Ekonomi dan Bisnis: ${fmt(S.rec ? S.rec.skor : calc().skor)}` });
+          return;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+      download();
+    }, 'image/png');
+  };
+}
+
+/* ===== Dock iklan ===== */
+(function () {
+  const dock = $('#dock'), btn = $('#dtog'), box = $('#adbox');
+  const AD = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;background:transparent">'
+    + '<script>atOptions = {"key":"7e56dd0eefdefd0a5dfb1399e79add12","format":"iframe","height":60,"width":468,"params":{}};<\/script>'
+    + '<script src="https://ballisticcomainvitation.com/7e56dd0eefdefd0a5dfb1399e79add12/invoke.js"><\/script></body></html>';
+  const fr = document.createElement('iframe');
+  fr.width = 468; fr.height = 60; fr.scrolling = 'no'; fr.title = 'Iklan';
+  fr.srcdoc = AD;
+  const wrap = document.createElement('div');
+  wrap.appendChild(fr); box.appendChild(wrap);
+
+  function fit() {
+    const s = Math.min(1, (Math.min(window.innerWidth, 440) - 28) / 468);
+    fr.style.transform = 'scale(' + s + ')';
+    wrap.style.width = Math.round(468 * s) + 'px';
+    wrap.style.height = Math.round(60 * s) + 'px';
+  }
+  fit(); window.addEventListener('resize', fit);
+
+  function syncH() { document.documentElement.style.setProperty('--dockh', dock.offsetHeight + 'px'); }
+  if (window.ResizeObserver) new ResizeObserver(syncH).observe(dock);
+  syncH(); window.addEventListener('resize', syncH);
+
+  let t = null;
+  function setOpen(open) {
+    dock.classList.toggle('closed', !open);
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Sembunyikan iklan' : 'Tampilkan iklan');
+    clearTimeout(t);
+    if (!open) t = setTimeout(() => setOpen(true), 15000);
+  }
+  btn.onclick = () => setOpen(dock.classList.contains('closed'));
+})();
+
+home();
+</script>
+</body>
+</html>
