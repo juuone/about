@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Simulasi UTS Pengantar Ekonomi Makro</title>
+<style>
+:root{
+  --bg:#f2f2f7;--card:#fff;--blue:#5856d6;--blue-soft:rgba(88,86,214,.1);
+  --green:#34c759;--green-soft:rgba(52,199,89,.12);--green-d:#248a3d;
+  --red:#ff3b30;--red-soft:rgba(255,59,48,.1);--red-d:#d70015;
+  --orange:#ff9500;--label:#1c1c1e;--sec:#8e8e93;--sep:#e5e5ea;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--label);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+#app{max-width:400px;margin:0 auto;padding:14px 14px 24px;min-height:calc(100vh - 90px)}
+.foot{max-width:400px;margin:0 auto;padding:6px 14px calc(var(--dockh,0px) + 90px)}
+.fc{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.fc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fc-av{flex:none;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7d7aff,#5856d6);color:#fff;font-weight:700;font-size:20px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(88,86,214,.3)}
+.fc-t b{display:block;font-size:15px;font-weight:600;line-height:1.25}
+.fc-t span{font-size:12.5px;color:var(--sec)}
+.fc-ig{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:600;font-size:14px;padding:11px 14px;border-radius:12px;
+  background:linear-gradient(45deg,#f58529,#dd2a7b 52%,#8134af);transition:opacity .15s}
+.fc-ig:active{opacity:.75}
+.fc-ig span{flex:1}
+.fc-n{font-size:11.5px;color:var(--sec);text-align:center;margin-top:12px;line-height:1.45}
+
+/* petunjuk */
+.hint-b{display:inline-flex;align-items:center;gap:6px;border:0;background:rgba(255,149,0,.13);color:#c25e00;font:inherit;font-size:13px;font-weight:600;
+  padding:6px 12px;border-radius:20px;cursor:pointer;margin:-4px 0 12px;transition:opacity .15s}
+.hint-b:active{opacity:.6}
+.hint{background:#fff8ec;border-left:3px solid var(--orange);border-radius:10px;padding:10px 12px;margin:-2px 0 14px;font-size:13.5px;line-height:1.5;
+  white-space:pre-line;color:#3a3a3c;animation:f .2s}
+.hint b{display:block;font-size:11px;font-weight:600;color:#c25e00;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+
+/* dock iklan */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;max-width:440px;margin:0 auto;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:16px 16px 0 0;box-shadow:0 -1px 0 var(--sep),0 -6px 24px rgba(0,0,0,.06);
+  padding-bottom:env(safe-area-inset-bottom,0)}
+.dock-h{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:none;padding:8px 14px;font:inherit;cursor:pointer;color:var(--sec);font-size:12px}
+.dock-h .grip{position:absolute;left:50%;top:5px;width:36px;height:4px;margin-left:-18px;border-radius:4px;background:#d1d1d6}
+.dock-h{position:relative;padding-top:14px}
+.dock-h svg{transition:transform .25s;color:var(--sec)}
+.dock.closed .dock-h svg{transform:rotate(180deg)}
+.dock-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s ease}
+.dock.closed .dock-b{grid-template-rows:0fr}
+.dock-b>div{overflow:hidden;min-height:0}
+.dock-i{display:flex;justify-content:center;padding:2px 14px 10px}
+.dock-i iframe{border:0;display:block;transform-origin:top left;background:transparent}
+h1{font-size:24px;font-weight:700;letter-spacing:-.4px;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 8px}
+p{margin:0}
+.sub{color:var(--sec);font-size:13px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px}
+.group{background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:.5px solid var(--sep);font-size:14px}
+.row:last-child{border-bottom:0}
+.row b{font-weight:600}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:600;font-size:15px;
+  background:var(--blue);color:#fff;cursor:pointer;text-align:center;transition:opacity .15s,transform .1s}
+.btn:active{opacity:.7;transform:scale(.99)}
+.btn.sec{background:var(--blue-soft);color:var(--blue)}
+.btn.plain{background:transparent;color:var(--blue)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btns{display:flex;flex-direction:column;gap:8px}
+.btns.h{flex-direction:row}
+input[type=text]{width:100%;border:0;background:#f2f2f7;border-radius:10px;padding:12px;font:inherit;font-size:16px;outline:2px solid transparent;outline-offset:0}
+input[type=text]:focus{outline-color:var(--blue)}
+.center{text-align:center}
+.mt{margin-top:12px}.mt2{margin-top:20px}
+.hero{padding:26px 0 18px}
+.badge{display:inline-block;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px}
+
+/* quiz */
+.top{position:sticky;top:0;z-index:5;margin:-14px -14px 12px;padding:calc(10px + env(safe-area-inset-top,0)) 14px 10px;
+  background:rgba(242,242,247,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:.5px solid var(--sep)}
+.top-r{display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.top-r b{font-size:15px}
+.link{color:var(--blue);background:none;border:0;font:inherit;font-weight:500;cursor:pointer;padding:0}
+.bar{height:4px;background:var(--sep);border-radius:4px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);transition:width .25s}
+.q{font-size:16px;font-weight:600;line-height:1.45;margin:6px 0 14px;white-space:pre-line}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid transparent;
+  border-radius:12px;padding:11px 12px;margin-bottom:8px;font:inherit;font-size:15px;color:var(--label);cursor:pointer;transition:background .15s,border-color .15s}
+.opt .l{flex:none;width:24px;height:24px;border-radius:50%;background:#f2f2f7;color:var(--sec);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:-1px}
+.opt.sel{border-color:var(--blue);background:#f6f6ff}
+.opt.sel .l{background:var(--blue);color:#fff}
+.nav{position:fixed;left:0;right:0;bottom:var(--dockh,0px);z-index:6;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:.5px solid var(--sep);padding:10px 14px}
+.nav>div{max-width:400px;margin:0 auto;display:flex;gap:8px}
+.nav .btn{padding:11px}
+
+/* sheet */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:f .18s}
+.sheet{background:var(--bg);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:14px 14px calc(16px + env(safe-area-inset-bottom,0));max-height:86vh;overflow:auto;animation:u .22s}
+.alert{background:rgba(255,255,255,.96);border-radius:14px;width:270px;text-align:center;overflow:hidden;align-self:center;animation:f .18s}
+.alert .t{padding:18px 16px 14px}
+.alert .t b{font-size:16px;display:block;margin-bottom:4px}
+.alert .a{display:flex;border-top:.5px solid var(--sep)}
+.alert .a button{flex:1;background:none;border:0;padding:12px;font:inherit;font-size:16px;color:var(--blue);cursor:pointer}
+.alert .a button+button{border-left:.5px solid var(--sep);font-weight:600}
+@keyframes u{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes f{from{opacity:0}to{opacity:1}}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.grid button{aspect-ratio:1;border:0;border-radius:10px;background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--label);cursor:pointer}
+.grid button.done{background:var(--blue-soft);color:var(--blue)}
+.grid button.cur{background:var(--blue);color:#fff}
+
+/* result */
+.ring{position:relative;width:150px;height:150px;margin:6px auto 10px}
+.ring svg{transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .n b{font-size:38px;font-weight:700;letter-spacing:-1px;line-height:1}
+.ring .n span{font-size:12px;color:var(--sec);margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:20px;font-weight:700}
+.stat span{font-size:12px;color:var(--sec)}
+.pbar{height:6px;background:var(--sep);border-radius:6px;overflow:hidden;margin-top:6px}
+.pbar i{display:block;height:100%;background:var(--blue);border-radius:6px}
+.status{font-size:12px;text-align:center;color:var(--sec);margin-bottom:12px}
+.status.ok{color:var(--green-d)}.status.err{color:var(--red-d)}
+
+/* review */
+.seg{display:flex;background:#e3e3e8;border-radius:9px;padding:2px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:transparent;border-radius:7px;padding:6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--label)}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+.rv-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:var(--sec)}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.tag.ok{background:var(--green-soft);color:var(--green-d)}
+.tag.no{background:var(--red-soft);color:var(--red-d)}
+.tag.bl{background:#eee;color:var(--sec)}
+.ans{border-radius:9px;padding:8px 10px;margin-top:6px;font-size:14px}
+.ans small{display:block;font-size:11px;font-weight:600;margin-bottom:1px}
+.ans.w{background:var(--red-soft);color:var(--red-d)}
+.ans.r{background:var(--green-soft);color:var(--green-d)}
+.exp{margin-top:8px;font-size:13.5px;color:#3a3a3c;background:#f7f7fa;border-radius:9px;padding:9px 10px;white-space:pre-line}
+.exp b{display:block;font-size:11px;color:var(--sec);margin-bottom:2px}
+.lb{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--sep)}
+.lb:last-child{border-bottom:0}
+.lb .rk{width:22px;text-align:center;font-weight:600;color:var(--sec);font-size:14px}
+.lb .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .sc{font-weight:700}
+.lb.me{background:#f6f6ff}
+canvas#cv{width:100%;border-radius:12px;display:block;background:#fff}
+.back{display:inline-flex;align-items:center;gap:2px;color:var(--blue);background:none;border:0;font:inherit;font-size:16px;padding:6px 0;cursor:pointer;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="foot">
+  <div class="fc">
+    <div class="fc-top">
+      
+      <div class="fc-t"><b>Simulasi UTS</b><span>Pengantar Ekonomi Makro</span></div>
+    </div>
+    <a class="fc-ig" href="https://instagram.com/ajuan_apriansyah" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      <span>Ikuti @ajuan_apriansyah</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+    </a>
+      </div>
+</div>
+
+<div class="dock" id="dock">
+  <button class="dock-h" id="dtog" aria-expanded="true" aria-label="Sembunyikan iklan">
+    <span class="grip"></span>
+    <span>Iklan</span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="dock-b"><div><div class="dock-i" id="adbox"></div></div></div>
+</div>
+<div id="modal"></div>
+
+<script>
+/* ===== Konfigurasi ===== */
+const DB = 'https://simulasi-fb840-default-rtdb.asia-southeast1.firebasedatabase.app';
+const NODE = 'hasil_makro';
+const TOPICS = ['Konsep Dasar Ilmu Ekonomi', 'Pendapatan Nasional', 'Konsumsi dan Tabungan', 'Investasi'];
+
+/* ===== Bank soal: [topik, soal, jawaban benar, [3 pengecoh], pembahasan, petunjuk (opsional)] ===== */
+const BANK = [
+/* --- Konsep Dasar Ilmu Ekonomi (16) --- */
+[0,'Menurut materi, ilmu ekonomi didasarkan pada tiga konsep penting, yaitu ...','Kelangkaan (scarcity), pilihan (choice), dan pengambilan keputusan (decision making)',['Permintaan, penawaran, dan harga','Produksi, distribusi, dan konsumsi','Mikro, makro, dan pembangunan'],
+ 'Ilmu ekonomi bertumpu pada kelangkaan (scarcity), pilihan (choice), dan pengambilan keputusan (decision making).'],
+[0,'Ilmu ekonomi muncul karena ...','Manusia selalu ingin mendapatkan sesuatu melebihi sumber daya yang dimilikinya',['Sumber daya alam tersedia melimpah bagi semua orang','Pemerintah membatasi kegiatan produksi dan konsumsi','Seluruh kebutuhan manusia selalu dapat dipenuhi'],
+ 'Keinginan manusia tidak terbatas sedangkan sumber daya terbatas. Ilmu ekonomi diperlukan untuk memahami cara memenuhi keinginan tersebut dengan sumber daya yang terbatas.'],
+[0,'Kata ekonomi berasal dari bahasa Yunani kuno, yaitu ...','Oikos (rumah tangga) dan nomos (kebiasaan atau hukum)',['Polis (kota) dan nomos (hukum)','Oikos (rumah tangga) dan logos (ilmu)','Agora (pasar) dan nomos (aturan)'],
+ 'Ekonomi berasal dari oikos ("rumah tangga") dan nomos ("kebiasaan" atau "hukum"), yang diterjemahkan sebagai aturan atau kebiasaan dalam rumah tangga.'],
+[0,'Menurut Paul A. Samuelson, ilmu ekonomi adalah ...','Studi tentang bagaimana masyarakat memanfaatkan sumber daya langka untuk menghasilkan komoditas bernilai dan mendistribusikannya di antara berbagai kelompok',['Ilmu tentang cara memperoleh keuntungan sebesar-besarnya','Ilmu tentang pencatatan dan pelaporan keuangan perusahaan','Studi tentang cara pemerintah mengumpulkan pajak'],
+ 'Definisi Samuelson menekankan pemanfaatan sumber daya langka untuk menghasilkan komoditas bernilai serta pendistribusiannya di antara berbagai kelompok masyarakat.'],
+[0,'Pertanyaan besar dalam ilmu ekonomi mengenai produksi barang dan jasa adalah ...','Apa, bagaimana, dan untuk siapa barang dan jasa diproduksi',['Kapan, di mana, dan oleh siapa uang dicetak','Siapa, kapan, dan berapa pajak dipungut','Mengapa, kapan, dan berapa harga ditetapkan'],
+ 'Dengan sumber daya terbatas dan banyak pilihan, keputusan yang harus diambil adalah apa, bagaimana, dan untuk siapa barang dan jasa diproduksi.'],
+[0,'Kondisi ketika pilihan yang memaksimalkan kepentingan pribadi sekaligus memaksimalkan kepentingan sosial disebut ...','Self interest sejalan dengan social interest',['Kesalahan komposisi','Post hoc fallacy','Kegagalan pasar (market failure)'],
+ 'Salah satu pertanyaan besar ilmu ekonomi adalah kapan self interest sejalan dengan social interest.'],
+[0,'Berikut ini yang BUKAN termasuk konsep dasar dalam ilmu ekonomi menurut materi adalah ...','Inflasi',['Kelangkaan (scarcity)','Biaya kesempatan (opportunity cost)','Alokasi (allocation)'],
+ 'Konsep dasar yang disebutkan adalah kelangkaan, pilihan, biaya kesempatan, dan alokasi. Inflasi adalah salah satu isu utama ekonomi makro, bukan konsep dasar.'],
+[0,'Kesalahan menarik kesimpulan bahwa peristiwa pertama adalah penyebab peristiwa kedua hanya karena keduanya terjadi secara berurutan disebut ...','Post hoc fallacy',['Kesalahan komposisi','Kegagalan pasar (market failure)','Asumsi ceteris paribus'],
+ 'Post hoc fallacy muncul ketika dua peristiwa yang berurutan dianggap berhubungan sebab-akibat, padahal belum tentu demikian.'],
+[0,'Anggapan bahwa kebijakan yang berhasil di satu negara pasti baik pula untuk negara lain merupakan contoh ...','Kesalahan komposisi',['Post hoc fallacy','Kegagalan pasar (market failure)','Asumsi ceteris paribus'],
+ 'Kesalahan komposisi terjadi ketika sesuatu yang baik bagi satu individu (atau satu negara) dianggap baik pula bagi seluruh individu (atau negara lain).'],
+[0,'Jalan raya tidak dapat diproduksi melalui mekanisme pasar sehingga perlu intervensi pemerintah. Hal ini berkaitan dengan fungsi pemerintah berupa ...','Fungsi alokasi',['Fungsi stabilisasi','Fungsi distribusi','Fungsi moneter'],
+ 'Fungsi alokasi diperlukan jika terjadi kegagalan pasar, yaitu ada barang yang tidak dapat diproduksi melalui mekanisme pasar, misalnya jalan raya.'],
+[0,'Ketimpangan pendapatan antar masyarakat memerlukan fungsi pemerintah berupa ...','Fungsi distribusi',['Fungsi alokasi','Fungsi stabilisasi','Fungsi produksi'],
+ 'Fungsi distribusi dibutuhkan ketika terjadi ketimpangan pendapatan antar masyarakat.'],
+[0,'Instrumen kebijakan moneter adalah ...','Penetapan jumlah uang beredar dan suku bunga sertifikat bank sentral',['Pajak dan bea cukai','Anggaran dan belanja nasional','Subsidi dan transfer pemerintah'],
+ 'Kebijakan moneter memengaruhi pasar uang (jumlah uang beredar, suku bunga). Pajak, bea cukai, serta anggaran dan belanja nasional adalah instrumen kebijakan fiskal.'],
+[0,'Berikut ini yang merupakan contoh pokok bahasan ekonomi makro adalah ...','Tingkat inflasi dan indeks harga konsumen (IHK)',['Jumlah mobil yang akan diproduksi suatu perusahaan','Harga sewa ruang kantor tertentu','Jumlah akuntan pada suatu perusahaan'],
+ 'Ekonomi makro membahas agregat seperti output nasional, tingkat harga secara keseluruhan (IHK dan inflasi), pendapatan nasional, dan pengangguran. Pilihan lain adalah contoh ekonomi mikro.'],
+[0,'Pandangan aliran Klasik mengenai peran pemerintah dalam perekonomian adalah ...','Pemerintah sebaiknya meminimalkan campur tangan karena pasar dapat self regulated',['Pemerintah harus aktif campur tangan karena pasar tidak dapat self regulated','Pemerintah harus memiliki seluruh alat produksi','Pemerintah harus menetapkan semua harga barang'],
+ 'Klasik percaya pasar dapat mengatur dirinya sendiri. Sebaliknya, Keynesian tidak percaya pasar self regulated sehingga pemerintah seharusnya campur tangan.'],
+[0,'Pertumbuhan ekonomi sebagai salah satu isu utama ekonomi makro diukur, antara lain, dari ...','Persentase perubahan produksi barang dan jasa dari waktu ke waktu',['Jumlah uang yang beredar','Besarnya pajak yang dipungut pemerintah','Tingkat suku bunga bank sentral'],
+ 'Pertumbuhan ekonomi adalah persentase perubahan kegiatan perekonomian dari waktu ke waktu, salah satunya diukur dari persentase perubahan produksi barang dan jasa.'],
+[0,'Pernyataan formal dari sebuah teori melalui penyederhanaan asumsi, biasanya berbentuk pernyataan matematis hubungan dua variabel atau lebih, disebut ...','Model',['Hipotesis','Variabel','Asumsi'],
+ 'Model adalah pernyataan formal dari sebuah teori. Hipotesis adalah dugaan awal hubungan antar variabel, asumsi adalah kondisi yang ditetapkan agar teori berlaku, dan variabel adalah besaran yang dapat bernilai berbeda.'],
+
+/* --- Pendapatan Nasional (17) --- */
+[1,'Pendapatan nasional adalah ...','Nilai total barang dan jasa akhir yang dihasilkan suatu perekonomian dalam periode tertentu, umumnya satu tahun',['Jumlah uang yang beredar dalam perekonomian','Total pajak yang diterima pemerintah dalam satu tahun','Nilai seluruh barang yang diekspor suatu negara'],
+ 'Pendapatan nasional adalah nilai total barang dan jasa akhir yang dihasilkan perekonomian dalam periode tertentu, umumnya satu tahun.'],
+[1,'GDP (Gross Domestic Product) mengukur ...','Nilai pasar barang dan jasa akhir yang diproduksi di dalam wilayah negara, tanpa memandang kewarganegaraan pemilik faktor produksi',['Nilai barang dan jasa yang dihasilkan warga negara di mana pun berada','Nilai seluruh transaksi barang setengah jadi','Pendapatan pemerintah dari pajak langsung'],
+ 'GDP berbasis wilayah (domestik). Ukuran berbasis kewarganegaraan pemilik faktor produksi adalah GNP.'],
+[1,'Tiga pendekatan untuk menghitung pendapatan nasional adalah ...','Pendekatan produksi, pendapatan, dan pengeluaran',['Pendekatan produksi, konsumsi, dan distribusi','Pendekatan pendapatan, tabungan, dan investasi','Pendekatan pengeluaran, pajak, dan subsidi'],
+ 'Pendapatan nasional dapat dihitung melalui pendekatan produksi (nilai tambah), pendapatan (balas jasa faktor produksi), dan pengeluaran. Jika dihitung dengan benar, ketiganya menghasilkan nilai yang sama.'],
+[1,'Nilai tambah (value added) pada pendekatan produksi dihitung dengan ...','Nilai output dikurangi nilai input antara, untuk menghindari perhitungan ganda',['Nilai output ditambah nilai input antara','Nilai output dikurangi depresiasi','Nilai ekspor dikurangi nilai impor'],
+ 'Nilai tambah = output - input antara. Cara ini mencegah double counting, yaitu penghitungan nilai barang antara lebih dari satu kali.'],
+[1,'Petani menjual gandum Rp1.000, pabrik tepung menjual tepung Rp1.600, pabrik roti menjual roti Rp2.500, dan toko menjual roti ke konsumen Rp3.200. Total nilai tambah seluruh tahap adalah ...','Rp3.200',['Rp8.300','Rp2.200','Rp700'],
+ 'Nilai tambah: petani 1.000, pabrik tepung 1.600 - 1.000 = 600, pabrik roti 2.500 - 1.600 = 900, toko 3.200 - 2.500 = 700. Totalnya 1.000 + 600 + 900 + 700 = 3.200, sama dengan nilai barang akhir. Rp8.300 adalah penjumlahan seluruh output (terjadi perhitungan ganda).',
+ 'Nilai tambah tiap tahap = output - input antara (tahap pertama: seluruh nilainya).\nJumlahkan nilai tambah semua tahap.'],
+[1,'Pada pendekatan pendapatan Y = w + r + i + p, balas jasa untuk pemilik modal adalah ...','Bunga (interest)',['Upah (wage)','Sewa (rent)','Laba (profit)'],
+ 'w = upah untuk tenaga kerja, r = sewa untuk pemilik tanah/aset, i = bunga untuk pemilik modal, p = laba untuk pengusaha.'],
+[1,'Pada pendekatan pengeluaran Y = C + I + G + (X - M), komponen (X - M) disebut ...','Ekspor neto',['Investasi neto','Belanja pemerintah neto','Konsumsi neto'],
+ 'X adalah ekspor dan M adalah impor, sehingga (X - M) adalah ekspor neto (net export).'],
+[1,'Diketahui (triliun rupiah): C = 4.500, I = 1.800, G = 1.200, X = 950, dan M = 750. Pendapatan nasional (Y) dengan pendekatan pengeluaran adalah ...','Rp7.700 triliun',['Rp8.200 triliun','Rp7.500 triliun','Rp9.200 triliun'],
+ 'Y = C + I + G + (X - M) = 4.500 + 1.800 + 1.200 + (950 - 750) = 4.500 + 1.800 + 1.200 + 200 = 7.700.',
+ 'Y = C + I + G + (X - M)\nHitung ekspor neto (X - M) terlebih dahulu, lalu jumlahkan semua komponen.'],
+[1,'Diketahui (triliun rupiah): C = 3.200, I = 900, G = 650, X = 500, dan M = 420. Pendapatan nasional (Y) adalah ...','Rp4.830 triliun',['Rp5.250 triliun','Rp4.770 triliun','Rp4.910 triliun'],
+ 'Y = 3.200 + 900 + 650 + (500 - 420) = 3.200 + 900 + 650 + 80 = 4.830. Rp5.250 muncul bila impor tidak dikurangkan.',
+ 'Y = C + I + G + (X - M)'],
+[1,'GDP suatu negara Rp7.700 triliun, pendapatan WNI di luar negeri Rp150 triliun, dan pendapatan asing di dalam negeri Rp230 triliun. GNP negara tersebut adalah ...','Rp7.620 triliun',['Rp7.780 triliun','Rp8.080 triliun','Rp7.700 triliun'],
+ 'GNP = GDP + (pendapatan WNI di luar negeri - pendapatan asing di dalam negeri) = 7.700 + (150 - 230) = 7.700 - 80 = 7.620.',
+ 'GNP = GDP + pendapatan neto faktor produksi luar negeri\nPendapatan neto = pendapatan WNI di luar negeri - pendapatan asing di dalam negeri'],
+[1,'GDP suatu negara Rp5.000 triliun, pendapatan faktor produksi WNI di luar negeri Rp80 triliun, dan pendapatan faktor produksi asing di dalam negeri Rp150 triliun. GNP negara tersebut adalah ...','Rp4.930 triliun',['Rp5.070 triliun','Rp5.230 triliun','Rp4.770 triliun'],
+ 'GNP = 5.000 + (80 - 150) = 5.000 - 70 = 4.930. Pendapatan neto faktor luar negeri bernilai negatif karena pendapatan asing di dalam negeri lebih besar.',
+ 'GNP = GDP + (pendapatan WNI di luar negeri - pendapatan asing di dalam negeri)'],
+[1,'Jika GNP = 6.200, depresiasi = 250, pajak tidak langsung = 180, dan subsidi = 40 (triliun rupiah), maka National Income (NI) adalah ...','Rp5.810 triliun',['Rp5.950 triliun','Rp6.090 triliun','Rp5.730 triliun'],
+ 'NNP = GNP - depresiasi = 6.200 - 250 = 5.950. NI = NNP - pajak tidak langsung + subsidi = 5.950 - 180 + 40 = 5.810.',
+ 'NNP = GNP - depresiasi\nNI = NNP - pajak tidak langsung + subsidi'],
+[1,'NI = Rp7.080 triliun, laba ditahan = 90, iuran jaminan sosial = 70, pajak perseroan = 110, dan transfer payment = 100. Personal Income (PI) adalah ...','Rp6.910 triliun',['Rp6.810 triliun','Rp7.250 triliun','Rp7.350 triliun'],
+ 'PI = NI - (laba ditahan + iuran jaminan sosial + pajak perseroan) + transfer payment = 7.080 - (90 + 70 + 110) + 100 = 7.080 - 270 + 100 = 6.910.',
+ 'PI = NI - (laba ditahan + iuran jaminan sosial + pajak perseroan) + transfer payment'],
+[1,'PI = Rp6.910 triliun dan pajak langsung = Rp200 triliun. Disposable Income (DI) adalah ...','Rp6.710 triliun',['Rp7.110 triliun','Rp6.910 triliun','Rp6.510 triliun'],
+ 'DI = PI - pajak langsung = 6.910 - 200 = 6.710. Inilah pendapatan yang benar-benar dapat dibelanjakan atau ditabung rumah tangga.',
+ 'DI = PI - pajak langsung (pajak pendapatan pribadi)'],
+[1,'Urutan konsep pendapatan dari GDP hingga pendapatan disposabel yang benar adalah ...','GDP, GNP, NNP, NI, PI, DI',['GDP, NNP, GNP, PI, NI, DI','GNP, GDP, NI, NNP, DI, PI','GDP, GNP, NI, NNP, PI, DI'],
+ 'GDP + pendapatan neto faktor luar negeri = GNP; GNP - depresiasi = NNP; NNP - pajak tidak langsung + subsidi = NI; NI disesuaikan menjadi PI; PI - pajak langsung = DI.'],
+[1,'GDP nominal Rp12.500 triliun dan GDP riil Rp10.000 triliun (tahun dasar 2015). GDP Deflator dan maknanya adalah ...','125, artinya tingkat harga umum sekitar 25% lebih tinggi dibanding tahun dasar',['80, artinya tingkat harga umum 20% lebih rendah dibanding tahun dasar','25, artinya tingkat harga umum naik 25 kali lipat','125, artinya tingkat harga umum turun 25% dibanding tahun dasar'],
+ 'Deflator = (12.500 / 10.000) × 100 = 125. Nilai di atas 100 menunjukkan harga umum lebih tinggi dibanding tahun dasar (inflasi sejak tahun dasar).',
+ 'GDP Deflator = (GDP Nominal / GDP Riil) × 100'],
+[1,'GDP riil dihitung berdasarkan ...','Harga konstan tahun dasar sehingga bebas dari pengaruh inflasi',['Harga berlaku pada tahun yang bersangkutan','Harga rata-rata seluruh tahun','Harga barang ekspor saja'],
+ 'GDP riil memakai harga konstan tahun dasar (bebas inflasi), sedangkan GDP nominal memakai harga berlaku pada tahun tersebut.'],
+
+/* --- Konsumsi dan Tabungan (15) --- */
+[2,'Faktor penentu utama (determinan primer) pengeluaran konsumsi adalah ...','Pendapatan disposabel (Yd)',['Tingkat suku bunga','Kekayaan dan ekspektasi','Jumlah uang beredar'],
+ 'Pendapatan disposabel (pendapatan siap dibelanjakan) adalah determinan primer. Kenaikannya diikuti kenaikan pengeluaran konsumsi agregat.'],
+[2,'Menurut materi, tingkat suku bunga yang tinggi cenderung ...','Mendorong masyarakat menunda konsumsi dan menambah tabungan',['Mendorong konsumsi naik dan tabungan turun','Tidak memengaruhi konsumsi','Menaikkan pendapatan disposabel'],
+ 'Suku bunga tinggi membuat menabung lebih menarik (substitution effect), sehingga konsumsi saat ini cenderung ditunda.'],
+[2,'Tabungan nasional merupakan gabungan dari ...','Tabungan swasta (personal dan bisnis) dan tabungan pemerintah (public saving)',['Tabungan rumah tangga dan konsumsi pemerintah','Investasi swasta dan investasi pemerintah','Pajak langsung dan pajak tidak langsung'],
+ 'Tabungan adalah bagian pendapatan yang tidak dikonsumsi. Tabungan nasional = private saving (personal dan business) + tabungan pemerintah. Tabungan nasional yang tinggi membuat capital stock dan output potensial tumbuh lebih cepat.'],
+[2,'Berdasarkan skedul hipotetis, pada Yd = Rp1.500 juta konsumsi (C) = Rp1.250 juta. Nilai APC adalah ...','0,83',['0,70','1,20','0,17'],
+ 'APC = C / Yd = 1.250 / 1.500 = 0,83.',
+ 'APC = C / Yd'],
+[2,'Ketika Yd naik dari Rp1.000 juta menjadi Rp2.000 juta, konsumsi naik dari Rp900 juta menjadi Rp1.600 juta. Nilai MPC adalah ...','0,7',['0,3','0,8','0,9'],
+ 'MPC = ΔC / ΔYd = (1.600 - 900) / (2.000 - 1.000) = 700 / 1.000 = 0,7.',
+ 'MPC = perubahan C / perubahan Yd\nPerubahan = nilai akhir - nilai awal'],
+[2,'Pada Yd = Rp2.000 juta, tabungan (S) = Rp400 juta. Nilai APS adalah ...','0,2',['0,8','0,4','5,0'],
+ 'APS = S / Yd = 400 / 2.000 = 0,2. Sesuai skedul, APC (0,80) + APS (0,20) = 1.',
+ 'APS = S / Yd'],
+[2,'Jika MPC suatu masyarakat = 0,7, maka MPS adalah ...','0,3',['0,7','1,7','0,07'],
+ 'Berlaku MPC + MPS = 1 (dan APC + APS = 1), sehingga MPS = 1 - 0,7 = 0,3.',
+ 'MPC + MPS = 1'],
+[2,'Menurut hipotesis siklus hidup (life cycle) Franco Modigliani, konsumsi masyarakat didasarkan pada ...','Siklus hidup manusia: masa muda (perencanaan), masa produktif (menabung), dan masa tua (pensiun)',['Pendapatan puncak yang pernah dicapai sebelumnya','Pendapatan lingkungan sosial sekitar','Pendapatan saat ini saja'],
+ 'Orang menabung agar memiliki pendapatan yang cukup selama masa pensiun, sehingga konsumsi berlangsung sepanjang waktu.'],
+[2,'Diketahui fungsi konsumsi C = 200 + 0,7Yd (dalam Rp juta). Pada Yd = 1.000, besarnya konsumsi adalah ...','Rp900 juta',['Rp700 juta','Rp1.100 juta','Rp1.200 juta'],
+ 'C = 200 + 0,7(1.000) = 200 + 700 = 900. Hasil ini sesuai dengan skedul konsumsi pada materi.',
+ 'C = a + b.Yd, dengan a = konsumsi otonom dan b = MPC\nSubstitusikan nilai Yd.'],
+[2,'Dari fungsi konsumsi C = 200 + 0,7Yd, fungsi tabungannya adalah ...','S = -200 + 0,3Yd',['S = 200 + 0,3Yd','S = -200 + 0,7Yd','S = 200 - 0,3Yd'],
+ 'S = Yd - C = Yd - (200 + 0,7Yd) = -200 + 0,3Yd. Konstanta bernilai -a dan kemiringannya MPS = 1 - b.',
+ 'S = Yd - C\nSubstitusikan fungsi C lalu sederhanakan.'],
+[2,'Diketahui C = 200 + 0,8Yd (Rp juta). Titik impas (break-even point) terjadi pada Yd sebesar ...','Rp1.000 juta',['Rp250 juta','Rp800 juta','Rp1.600 juta'],
+ 'BEP terjadi saat Yd = C (S = 0): Yd = 200 + 0,8Yd, maka 0,2Yd = 200 dan Yd = 1.000.',
+ 'BEP: Yd = C (tabungan = 0)\nYd = a + b.Yd, lalu selesaikan untuk Yd.'],
+[2,'Ketika pendapatan disposabel berada di bawah titik impas (Yd < BEP), nilai tabungan adalah ...','Negatif (dissaving)',['Nol','Positif','Sama dengan konsumsi'],
+ 'Saat Yd < BEP, konsumsi melebihi pendapatan sehingga masyarakat menggunakan tabungan lama (dissaving) dan S bernilai negatif.'],
+[2,'Konsumsi saat ini dipengaruhi secara mutlak oleh pendapatan disposabel saat ini, dengan nilai MPC antara 0 dan 1. Pendapat ini dikemukakan oleh ...','John Maynard Keynes (Absolute Income Hypothesis)',['James Duesenberry (Relative Income Hypothesis)','Milton Friedman (Permanent Income Hypothesis)','Franco Modigliani (Life Cycle Hypothesis)'],
+ 'Keynes mengemukakan Absolute Income Hypothesis: konsumsi bergantung pada pendapatan disposabel saat ini, dengan 0 < MPC < 1.'],
+[2,'Konsumsi seseorang dipengaruhi oleh pendapatan lingkungan sosial sekitar (demonstration effect) dan pendapatan puncak sebelumnya. Pendapat ini dikemukakan oleh ...','James Duesenberry (Relative Income Hypothesis)',['John Maynard Keynes','Milton Friedman','Franco Modigliani'],
+ 'Duesenberry dengan Relative Income Hypothesis menekankan demonstration effect dan pendapatan puncak yang pernah dicapai.'],
+[2,'Menurut hipotesis pendapatan permanen (Milton Friedman), kenaikan pendapatan yang hanya sementara seperti THR atau bonus penjualan cenderung ...','Ditabung sehingga pola konsumsi tidak berubah',['Dikonsumsi seluruhnya','Menaikkan konsumsi secara permanen','Mengurangi tabungan'],
+ 'Kenaikan pendapatan permanen (promosi jabatan, kenaikan gaji) meningkatkan konsumsi, sedangkan kenaikan sementara (transitory income) cenderung ditabung.'],
+
+/* --- Investasi (12) --- */
+[3,'Pembentukan modal yang tidak dipengaruhi tingkat pendapatan nasional, tetapi dipicu perkembangan teknologi dan kebijakan publik, disebut investasi ...','Otonom (autonomous)',['Terpengaruh (induced)','Finansial','Konsumtif'],
+ 'Investasi otonom tidak bergantung pada tingkat pendapatan nasional. Pada fungsi investasi, ia dilambangkan I0.'],
+[3,'Investasi terpengaruh (induced investment) adalah ...','Peningkatan barang modal sebagai respons langsung atas kenaikan pendapatan nasional dan permintaan pasar',['Pembentukan modal akibat perkembangan teknologi dan kebijakan publik','Pembelian surat berharga di pasar modal','Pembentukan modal yang tetap berapa pun pendapatan nasional'],
+ 'Investasi terpengaruh berubah mengikuti pendapatan nasional dan permintaan pasar, berbeda dengan investasi otonom yang tidak dipengaruhi pendapatan.'],
+[3,'Investasi riil berbeda dengan investasi finansial karena investasi riil ...','Menambah stok fisik seperti mesin dan pabrik',['Berfokus pada surat berharga di pasar modal','Tidak memerlukan modal','Hanya dilakukan oleh pemerintah'],
+ 'Investasi riil menambah stok barang modal fisik (mesin, pabrik), sedangkan investasi finansial berfokus pada surat berharga pasar modal.'],
+[3,'Dalam metode Net Present Value (NPV), suatu proyek investasi dinyatakan layak dijalankan jika ...','NPV lebih besar dari nol',['NPV lebih kecil dari nol','NPV sama dengan nol, sehingga proyek pasti untung','NPV tidak diperhitungkan, hanya IRR yang menentukan'],
+ 'NPV > 0: proyek layak. NPV < 0: proyek ditolak. NPV = 0: titik pulang pokok (impas).'],
+[3,'Internal Rate of Return (IRR) adalah ...','Tingkat diskonto yang menyamakan nilai sekarang arus kas dengan nilai investasi awal',['Tingkat bunga yang ditetapkan bank sentral','Jumlah arus kas masuk pada tahun pertama','Rasio stok kapital terhadap output'],
+ 'IRR adalah tingkat diskonto yang membuat nilai sekarang arus kas sama dengan investasi awal. Jika IRR > suku bunga, investasi menguntungkan.'],
+[3,'Fungsi investasi dinyatakan I = I0 - d(r). Jika I0 = 500, d = 20, dan r = 5, besarnya investasi (I) adalah ...','400',['600','495','100'],
+ 'I = 500 - 20(5) = 500 - 100 = 400. Tanda negatif menunjukkan hubungan negatif: suku bunga turun, investasi naik.',
+ 'I = I0 - d(r)\nKalikan d dengan r terlebih dahulu, lalu kurangkan dari I0.'],
+[3,'Marginal Efficiency of Capital (MEC) adalah ...','Tingkat pengembalian yang diharapkan dari setiap tambahan satu unit barang modal baru',['Tingkat bunga yang dibayar atas pinjaman bank','Rasio stok kapital terhadap output','Tambahan output dari tambahan satu tenaga kerja'],
+ 'MEC (landasan teori Keynes) adalah expected rate of return dari tambahan satu unit barang modal baru, diperoleh dengan menyamakan harga penawaran barang modal dengan nilai sekarang perkiraan pendapatan bersih.'],
+[3,'Perusahaan memperkirakan MEC proyek sebesar 12%, sedangkan suku bunga pinjaman 9%. Keputusan yang tepat adalah ...','Investasi diterima karena MEC lebih besar dari suku bunga',['Investasi ditolak karena MEC lebih besar dari suku bunga','Investasi berada di titik impas','Investasi ditunda karena MEC tidak relevan'],
+ 'MEC > suku bunga: investasi diterima karena keuntungan melebihi biaya modal. MEC < suku bunga: ditolak. MEC = suku bunga: titik impas.',
+ 'MEC > suku bunga: diterima\nMEC < suku bunga: ditolak\nMEC = suku bunga: titik impas (BEP)'],
+[3,'Perbedaan Marginal Efficiency of Investment (MEI) dengan MEC adalah ...','MEI memperhitungkan kenaikan harga barang modal akibat lonjakan permintaan investasi nasional, sehingga kurvanya lebih curam',['MEI mengasumsikan harga barang modal konstan sehingga kurvanya lebih landai','MEI hanya berlaku untuk satu perusahaan','MEI tidak berhubungan dengan suku bunga'],
+ 'MEC mengasumsikan harga barang modal konstan (level perusahaan, kurva lebih landai). MEI memperhitungkan kenaikan harga barang modal pada level nasional sehingga lebih curam dan lebih realistis.'],
+[3,'PDB tahun 2024 = Rp2.000 triliun, PDB tahun 2025 = Rp2.100 triliun, dan total investasi (PMTB) = Rp450 triliun. Nilai ICOR adalah ...','4,5',['45','0,22','5,5'],
+ 'ΔY = 2.100 - 2.000 = 100. ICOR = I / ΔY = 450 / 100 = 4,5, artinya dibutuhkan tambahan kapital 4,5 unit untuk menghasilkan 1 unit tambahan output.',
+ 'ICOR = I / ΔY\nΔY = PDB 2025 - PDB 2024'],
+[3,'Suatu negara memiliki ICOR sebesar 7,2. Berdasarkan tolok ukur pada materi, kondisi perekonomiannya adalah ...','Inefisien (capital intensive), karena ICOR lebih dari 6,0',['Sangat efisien, karena ICOR kurang dari 3,0','Efisien, karena ICOR mendekati 1','Tidak dapat dinilai dari nilai ICOR'],
+ 'ICOR rendah (< 3,0) berarti sangat efisien. ICOR tinggi (> 6,0) berarti inefisien (capital intensive), biasanya karena biaya tinggi, kendala logistik, atau pemborosan investasi.'],
+[3,'Capital Output Ratio (COR) adalah perbandingan antara ...','Total stok kapital (K) dengan total output nasional (Y)',['Tambahan modal (ΔK) dengan tambahan output (ΔY)','Investasi dengan konsumsi','Tabungan dengan pendapatan disposabel'],
+ 'COR membandingkan total stok kapital terhadap total output. Perbandingan tambahan modal terhadap tambahan output disebut ICOR.']
+];
+
+/* ===== Util ===== */
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const L = ['A', 'B', 'C', 'D'];
+const fmt = n => (Math.round(n * 10) / 10).toString().replace('.', ',');
+
+let S = { name: '', qs: [], ans: [], idx: 0, saved: 'idle', rec: null, filter: 'wrong', hintOpen: {}, hintUsed: new Set() };
+
+function build() {
+  S.qs = shuffle(BANK).map(b => {
+    const opts = shuffle([b[2], ...b[3]]);
+    return { t: b[0], q: b[1], opts, c: opts.indexOf(b[2]), e: b[4], h: b[5] || '' };
+  });
+  S.ans = new Array(S.qs.length).fill(null);
+  S.idx = 0; S.saved = 'idle'; S.rec = null; S.filter = 'wrong'; S.hintOpen = {}; S.hintUsed = new Set();
+}
+
+/* ===== Layar: mulai ===== */
+function home() {
+  window.onbeforeunload = null;
+  app.innerHTML = `
+    <div class="hero center">
+      <span class="badge">Simulasi UTS</span>
+      <h1 class="mt">Pengantar Ekonomi Makro</h1>
+      <p class="sub">S1 Ekonomi, Fakultas Ekonomika dan Bisnis</p>
+    </div>
+    <div class="card">
+      <h2>Masukkan nama</h2>
+      <input type="text" id="nm" maxlength="40" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.name)}">
+    </div>
+    <div class="group">
+      <div class="row"><span>Jumlah soal</span><b>60 pilihan ganda</b></div>
+      <div class="row"><span>Waktu</span><b>Tanpa batas</b></div>
+      <div class="row"><span>Materi</span><b>4 topik</b></div>
+    </div>
+    <p class="sub" style="margin:-4px 4px 14px">Konsep dasar ilmu ekonomi, pendapatan nasional, konsumsi dan tabungan, serta investasi. Soal dan urutan pilihan diacak. Soal hitungan tertentu dilengkapi tombol Petunjuk untuk melihat rumus.</p>
+    <div class="btns">
+      <button class="btn" id="go">Mulai Simulasi</button>
+      <button class="btn sec" id="lb">Papan Peringkat</button>
+    </div>`;
+  const nm = $('#nm');
+  const start = () => {
+    const v = nm.value.trim();
+    if (v.length < 2) { nm.focus(); nm.style.outlineColor = 'var(--red)'; return; }
+    S.name = v; build(); quiz();
+  };
+  $('#go').onclick = start;
+  nm.onkeydown = e => { if (e.key === 'Enter') start(); };
+  nm.oninput = () => nm.style.outlineColor = '';
+  $('#lb').onclick = () => leaderboard(home);
+}
+
+/* ===== Layar: ujian ===== */
+function hintHTML(i, q) {
+  const open = !!S.hintOpen[i];
+  return `<button class="hint-b ${open ? 'on' : ''}" id="hb"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg><span>${open ? 'Sembunyikan petunjuk' : 'Petunjuk'}</span></button>`
+    + (open ? `<div class="hint"><b>Petunjuk rumus</b>${esc(q.h)}</div>` : '');
+}
+
+function quiz() {
+  window.onbeforeunload = () => 'Pengerjaan belum selesai.';
+  const q = S.qs[S.idx], n = S.qs.length;
+  const done = S.ans.filter(a => a !== null).length;
+  app.innerHTML = `
+    <div class="top">
+      <div class="top-r"><span><b>Soal ${S.idx + 1}</b> <span class="sub">dari ${n}</span></span>
+        <button class="link" id="lst">Daftar soal</button></div>
+      <div class="bar"><i style="width:${done / n * 100}%"></i></div>
+    </div>
+    <p class="sub">${TOPICS[q.t]}</p>
+    <div class="q">${esc(q.q)}</div>
+    ${q.h ? hintHTML(S.idx, q) : ''}
+    ${q.opts.map((o, i) => `<button class="opt ${S.ans[S.idx] === i ? 'sel' : ''}" data-i="${i}"><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`).join('')}
+    <div class="nav"><div>
+      <button class="btn sec" id="prev" ${S.idx === 0 ? 'disabled' : ''}>Sebelumnya</button>
+      ${S.idx === n - 1 ? '<button class="btn" id="fin">Selesai</button>' : '<button class="btn" id="next">Selanjutnya</button>'}
+    </div></div>`;
+  app.querySelectorAll('.opt').forEach(b => b.onclick = () => { S.ans[S.idx] = +b.dataset.i; quiz(); });
+  $('#prev').onclick = () => { S.idx--; quiz(); window.scrollTo(0, 0); };
+  const nx = $('#next'); if (nx) nx.onclick = () => { S.idx++; quiz(); window.scrollTo(0, 0); };
+  const fin = $('#fin'); if (fin) fin.onclick = askFinish;
+  $('#lst').onclick = listSheet;
+  const hb = $('#hb'); if (hb) hb.onclick = () => { S.hintOpen[S.idx] = !S.hintOpen[S.idx]; if (S.hintOpen[S.idx]) S.hintUsed.add(S.idx); quiz(); };
+}
+
+function listSheet() {
+  $('#modal').innerHTML = `<div class="ov" id="ov"><div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2 style="margin:0">Daftar soal</h2><button class="link" id="cl">Tutup</button></div>
+    <div class="grid">${S.qs.map((_, i) => `<button class="${i === S.idx ? 'cur' : S.ans[i] !== null ? 'done' : ''}" data-i="${i}">${i + 1}</button>`).join('')}</div>
+    <p class="sub mt">Terjawab ${S.ans.filter(a => a !== null).length} dari ${S.qs.length}</p>
+    <button class="btn mt" id="fin2">Selesaikan Ujian</button>
+  </div></div>`;
+  const close = () => $('#modal').innerHTML = '';
+  $('#cl').onclick = close;
+  $('#ov').onclick = e => { if (e.target.id === 'ov') close(); };
+  $('#modal').querySelectorAll('.grid button').forEach(b => b.onclick = () => { S.idx = +b.dataset.i; close(); quiz(); window.scrollTo(0, 0); });
+  $('#fin2').onclick = () => { close(); askFinish(); };
+}
+
+function askFinish() {
+  const blank = S.ans.filter(a => a === null).length;
+  $('#modal').innerHTML = `<div class="ov"><div class="alert"><div class="t"><b>Selesaikan ujian?</b>
+    <span class="sub" style="font-size:13px">${blank ? `Masih ada ${blank} soal yang belum dijawab.` : 'Semua soal sudah dijawab.'} Jawaban tidak dapat diubah setelah selesai.</span></div>
+    <div class="a"><button id="no">Kembali</button><button id="ok">Selesai</button></div></div></div>`;
+  $('#no').onclick = () => $('#modal').innerHTML = '';
+  $('#ok').onclick = () => { $('#modal').innerHTML = ''; finish(); };
+}
+
+/* ===== Penilaian & Firebase ===== */
+function calc() {
+  let benar = 0, salah = 0, kosong = 0;
+  const per = TOPICS.map(() => ({ b: 0, t: 0 }));
+  S.qs.forEach((q, i) => {
+    per[q.t].t++;
+    if (S.ans[i] === null) kosong++;
+    else if (S.ans[i] === q.c) { benar++; per[q.t].b++; }
+    else salah++;
+  });
+  const skor = Math.round(benar / S.qs.length * 1000) / 10;
+  return { benar, salah, kosong, skor, per };
+}
+
+function finish() {
+  window.onbeforeunload = null;
+  const r = calc();
+  S.rec = { nama: S.name, skor: r.skor, benar: r.benar, salah: r.salah, kosong: r.kosong, total: S.qs.length, petunjuk: S.hintUsed.size, waktu: Date.now() };
+  S.saved = 'saving';
+  result();
+  save();
+}
+
+async function save() {
+  S.saved = 'saving'; setStatus();
+  try {
+    const res = await fetch(`${DB}/${NODE}.json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(S.rec) });
+    if (!res.ok) throw new Error(res.status);
+    const j = await res.json();
+    S.key = j.name;
+    S.saved = 'ok';
+  } catch (e) { S.saved = 'err'; }
+  setStatus();
+}
+function setStatus() {
+  const el = $('#st'); if (!el) return;
+  const m = { saving: ['Menyimpan nilai ke database...', ''], ok: ['Nilai tersimpan di database', 'ok'], err: ['Gagal menyimpan nilai. Periksa koneksi atau aturan database.', 'err'] }[S.saved];
+  el.className = 'status ' + m[1];
+  el.innerHTML = esc(m[0]) + (S.saved === 'err' ? ' <button class="link" id="rt">Coba lagi</button>' : '');
+  const rt = $('#rt'); if (rt) rt.onclick = save;
+}
+
+/* ===== Layar: hasil ===== */
+function grade(s) { return s >= 85 ? 'Sangat baik' : s >= 70 ? 'Baik' : s >= 55 ? 'Cukup' : 'Perlu belajar lagi'; }
+
+function result() {
+  const r = calc(), C = 2 * Math.PI * 62;
+  const col = r.skor >= 70 ? '#34c759' : r.skor >= 55 ? '#ff9500' : '#ff3b30';
+  app.innerHTML = `
+    <div class="center" style="padding-top:12px">
+      <p class="sub">Hasil simulasi</p>
+      <h1>${esc(S.name)}</h1>
+      <div class="ring">
+        <svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="#e5e5ea" stroke-width="11"/>
+        <circle cx="75" cy="75" r="62" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - r.skor / 100)}"/></svg>
+        <div class="n"><b>${fmt(r.skor)}</b><span>${grade(r.skor)}</span></div>
+      </div>
+    </div>
+    <div class="status" id="st"></div>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--green-d)">${r.benar}</b><span>Benar</span></div>
+      <div class="stat"><b style="color:var(--red-d)">${r.salah}</b><span>Salah</span></div>
+      <div class="stat"><b style="color:var(--sec)">${r.kosong}</b><span>Kosong</span></div>
+    </div>
+    <div class="group"><div class="row"><span>Petunjuk dibuka</span><b>${S.hintUsed.size} soal</b></div></div>
+    <div class="card">
+      <h2>Per topik</h2>
+      ${r.per.map((p, i) => `<div style="margin-top:${i ? 12 : 4}px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${TOPICS[i]}</span><b>${p.b}/${p.t}</b></div>
+        <div class="pbar"><i style="width:${p.t ? p.b / p.t * 100 : 0}%"></i></div></div>`).join('')}
+    </div>
+    <div class="btns">
+      <button class="btn" id="sh">Bagikan Hasil</button>
+      <button class="btn sec" id="rv">Kunci Jawaban dan Pembahasan</button>
+      <button class="btn sec" id="lb">Papan Peringkat</button>
+      <button class="btn plain" id="re">Ulangi Simulasi</button>
+    </div>`;
+  setStatus();
+  $('#sh').onclick = shareSheet;
+  $('#rv').onclick = review;
+  $('#lb').onclick = () => leaderboard(result);
+  $('#re').onclick = () => { build(); S.name = S.name; home(); };
+}
+
+/* ===== Kunci jawaban ===== */
+function review() {
+  const items = S.qs.map((q, i) => ({ q, i, a: S.ans[i] }));
+  const list = S.filter === 'wrong' ? items.filter(x => x.a !== x.q.c) : items;
+  app.innerHTML = `
+    <button class="back" id="bk">&#8249; Hasil</button>
+    <h1>Kunci jawaban</h1>
+    <p class="sub" style="margin-bottom:12px">Pembahasan setiap soal berdasarkan materi perkuliahan.</p>
+    <div class="seg"><button data-f="wrong" class="${S.filter === 'wrong' ? 'on' : ''}">Salah dan kosong</button><button data-f="all" class="${S.filter === 'all' ? 'on' : ''}">Semua soal</button></div>
+    ${list.length ? list.map(({ q, i, a }) => {
+      const ok = a === q.c, bl = a === null;
+      return `<div class="card">
+        <div class="rv-h"><span>Soal ${i + 1} &middot; ${TOPICS[q.t]}</span><span class="tag ${ok ? 'ok' : bl ? 'bl' : 'no'}">${ok ? 'Benar' : bl ? 'Kosong' : 'Salah'}</span></div>
+        <div style="font-weight:600;white-space:pre-line">${esc(q.q)}</div>
+        ${!ok ? `<div class="ans w"><small>Jawaban Anda</small>${bl ? 'Tidak dijawab' : L[a] + '. ' + esc(q.opts[a])}</div>` : ''}
+        <div class="ans r"><small>Jawaban benar</small>${L[q.c]}. ${esc(q.opts[q.c])}</div>
+        <div class="exp"><b>Penjelasan</b>${esc(q.e)}</div>
+      </div>`;
+    }).join('') : '<div class="card center"><b>Semua jawaban benar.</b><p class="sub">Tidak ada soal yang perlu dibahas.</p></div>'}
+    <button class="btn sec" id="bk2">Kembali ke hasil</button>`;
+  $('#bk').onclick = $('#bk2').onclick = () => { result(); window.scrollTo(0, 0); };
+  app.querySelectorAll('.seg button').forEach(b => b.onclick = () => { S.filter = b.dataset.f; review(); window.scrollTo(0, 0); });
+  window.scrollTo(0, 0);
+}
+
+/* ===== Papan peringkat ===== */
+async function leaderboard(back) {
+  app.innerHTML = `<button class="back" id="bk">&#8249; Kembali</button><h1>Papan peringkat</h1>
+    <p class="sub" style="margin-bottom:12px">20 nilai tertinggi dari semua peserta.</p>
+    <div class="group" id="lbl"><div class="row"><span class="sub">Memuat data...</span></div></div>`;
+  $('#bk').onclick = () => { back(); window.scrollTo(0, 0); };
+  try {
+    const res = await fetch(`${DB}/${NODE}.json?orderBy=%22%24key%22&limitToLast=300`);
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json() || {};
+    const arr = Object.entries(d).map(([k, v]) => ({ k, ...v })).filter(v => typeof v.skor === 'number');
+    arr.sort((a, b) => b.skor - a.skor || a.waktu - b.waktu);
+    const top = arr.slice(0, 20);
+    $('#lbl').innerHTML = top.length ? top.map((v, i) => `<div class="lb ${S.key && v.k === S.key ? 'me' : ''}"><span class="rk">${i + 1}</span><span class="nm">${esc(v.nama || '-')}</span><span class="sc">${fmt(v.skor)}</span></div>`).join('')
+      : '<div class="row"><span class="sub">Belum ada data.</span></div>';
+  } catch (e) {
+    $('#lbl').innerHTML = '<div class="row"><span class="sub" style="color:var(--red-d)">Gagal memuat data. Periksa koneksi atau aturan database.</span></div>';
+  }
+}
+
+/* ===== Kanvas bagikan ===== */
+function drawCanvas() {
+  const r = calc(), W = 1080, H = 1350, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const F = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif';
+  const rr = (X, Y, w, h, rad, fill) => { x.beginPath(); x.roundRect(X, Y, w, h, rad); x.fillStyle = fill; x.fill(); };
+  x.fillStyle = '#f2f2f7'; x.fillRect(0, 0, W, H);
+  rr(60, 60, W - 120, H - 120, 44, '#ffffff');
+  x.textAlign = 'center';
+  x.fillStyle = '#5856d6'; x.font = `600 30px ${F}`; x.fillText('SIMULASI UTS', W / 2, 150);
+  x.fillStyle = '#1c1c1e'; x.font = `700 46px ${F}`; x.fillText('Pengantar Ekonomi Makro', W / 2, 212);
+  x.fillStyle = '#8e8e93'; x.font = `400 28px ${F}`; x.fillText('S1 Ekonomi, Fakultas Ekonomika dan Bisnis', W / 2, 258);
+  // nama
+  let nm = S.name; x.fillStyle = '#1c1c1e'; x.font = `600 44px ${F}`;
+  while (x.measureText(nm).width > 820 && nm.length > 3) nm = nm.slice(0, -1);
+  if (nm !== S.name) nm += '...';
+  x.fillText(nm, W / 2, 350);
+  // ring
+  const cx = W / 2, cy = 560, R = 150;
+  x.lineWidth = 28; x.lineCap = 'round';
+  x.strokeStyle = '#e5e5ea'; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+  x.strokeStyle = r.skor >= 70 ? '#34c759' : r.skor >= 55 ? '#ff9500' : '#ff3b30';
+  if (r.skor > 0) { x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * r.skor / 100); x.stroke(); }
+  x.fillStyle = '#1c1c1e'; x.font = `700 110px ${F}`; x.fillText(fmt(r.skor), cx, cy + 36);
+  x.fillStyle = '#8e8e93'; x.font = `500 30px ${F}`; x.fillText(grade(r.skor), cx, cy + 86);
+  // stat
+  const sy = 770, sw = 270, gap = 24, sx = (W - (sw * 3 + gap * 2)) / 2;
+  [['Benar', r.benar, '#248a3d'], ['Salah', r.salah, '#d70015'], ['Kosong', r.kosong, '#8e8e93']].forEach((s, i) => {
+    const X = sx + i * (sw + gap);
+    rr(X, sy, sw, 130, 26, '#f2f2f7');
+    x.fillStyle = s[2]; x.font = `700 56px ${F}`; x.fillText(s[1], X + sw / 2, sy + 70);
+    x.fillStyle = '#8e8e93'; x.font = `400 26px ${F}`; x.fillText(s[0], X + sw / 2, sy + 108);
+  });
+  // topik
+  x.textAlign = 'left';
+  r.per.forEach((p, i) => {
+    const Y = 950 + i * 76, X = 130, w = W - 260;
+    x.fillStyle = '#1c1c1e'; x.font = `500 28px ${F}`; x.fillText(TOPICS[i], X, Y);
+    x.textAlign = 'right'; x.font = `600 28px ${F}`; x.fillText(`${p.b}/${p.t}`, X + w, Y); x.textAlign = 'left';
+    rr(X, Y + 18, w, 14, 7, '#e5e5ea');
+    if (p.b) rr(X, Y + 18, Math.max(14, w * p.b / p.t), 14, 7, '#5856d6');
+  });
+  x.textAlign = 'center'; x.fillStyle = '#8e8e93'; x.font = `400 24px ${F}`;
+  x.fillText(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + '  |  60 soal pilihan ganda', W / 2, H - 90);
+  return c;
+}
+
+function shareSheet() {
+  const c = drawCanvas(), url = c.toDataURL('image/png');
+  $('#modal').innerHTML = `<div class="ov" id="ov"><div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2 style="margin:0">Bagikan hasil</h2><button class="link" id="cl">Tutup</button></div>
+    <img src="${url}" alt="Kartu hasil simulasi" style="width:100%;border-radius:12px;display:block">
+    <div class="btns mt">
+      <button class="btn" id="dosh">Bagikan</button>
+      <button class="btn sec" id="dodl">Simpan Gambar</button>
+    </div></div></div>`;
+  const close = () => $('#modal').innerHTML = '';
+  $('#cl').onclick = close;
+  $('#ov').onclick = e => { if (e.target.id === 'ov') close(); };
+  const download = () => { const a = document.createElement('a'); a.href = url; a.download = 'hasil-simulasi-uts.png'; document.body.appendChild(a); a.click(); a.remove(); };
+  $('#dodl').onclick = download;
+  $('#dosh').onclick = () => {
+    c.toBlob(async b => {
+      const f = new File([b], 'hasil-simulasi-uts.png', { type: 'image/png' });
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          await navigator.share({ files: [f], title: 'Hasil Simulasi UTS', text: `Skor simulasi UTS Pengantar Ekonomi Makro: ${fmt(S.rec ? S.rec.skor : calc().skor)}` });
+          return;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+      download();
+    }, 'image/png');
+  };
+}
+
+/* ===== Dock iklan ===== */
+(function () {
+  const dock = $('#dock'), btn = $('#dtog'), box = $('#adbox');
+  const AD = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;background:transparent">'
+    + '<script>atOptions = {"key":"7e56dd0eefdefd0a5dfb1399e79add12","format":"iframe","height":60,"width":468,"params":{}};<\/script>'
+    + '<script src="https://ballisticcomainvitation.com/7e56dd0eefdefd0a5dfb1399e79add12/invoke.js"><\/script></body></html>';
+  const fr = document.createElement('iframe');
+  fr.width = 468; fr.height = 60; fr.scrolling = 'no'; fr.title = 'Iklan';
+  fr.srcdoc = AD;
+  const wrap = document.createElement('div');
+  wrap.appendChild(fr); box.appendChild(wrap);
+
+  function fit() {
+    const s = Math.min(1, (Math.min(window.innerWidth, 440) - 28) / 468);
+    fr.style.transform = 'scale(' + s + ')';
+    wrap.style.width = Math.round(468 * s) + 'px';
+    wrap.style.height = Math.round(60 * s) + 'px';
+  }
+  fit(); window.addEventListener('resize', fit);
+
+  function syncH() { document.documentElement.style.setProperty('--dockh', dock.offsetHeight + 'px'); }
+  if (window.ResizeObserver) new ResizeObserver(syncH).observe(dock);
+  syncH(); window.addEventListener('resize', syncH);
+
+  let t = null;
+  function setOpen(open) {
+    dock.classList.toggle('closed', !open);
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Sembunyikan iklan' : 'Tampilkan iklan');
+    clearTimeout(t);
+    if (!open) t = setTimeout(() => setOpen(true), 15000);
+  }
+  btn.onclick = () => setOpen(dock.classList.contains('closed'));
+})();
+
+home();
+</script>
+</body>
+</html>
